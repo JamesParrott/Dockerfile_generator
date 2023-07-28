@@ -1,0 +1,31 @@
+ARG base_image=alpine
+ARG base_image_tag=3.18.2
+
+{% set build_step_used = False -%}
+{% if 'heirloom' in packages -%}
+{% set packages = packages.replace('heirloom','') -%}
+{% set build_step_used = True -%}
+FROM heirloom_build_step as builder
+
+COPY --from=builder /all_the_shells:/all_the_shells
+
+{% endif -%}
+
+{% if 'rc' in packages -%}
+{% set packages = packages.replace('rc','') -%}
+{% set build_step_used = True -%}
+FROM rc_build_step as builder
+
+COPY --from=builder /all_the_shells:/all_the_shells
+{% endif -%}
+
+FROM $base_image:$base_image_tag as base
+
+{% if build_step_used -%}
+COPY --from=builder /all_the_shells:/
+{% endif -%}
+
+# ARG PKG_MGR_APPS
+# ENV PKG_MGR_APPS=${PKG_MGR_APPS:-"bash"}
+# RUN apk add --no-cache ${PKG_MGR_APPS}
+RUN apk add --no-cache {{packages|replace('  ',' ')|replace('" ','"')|replace(' "','"')|replace("' ","'")|replace(" '","'")}}
