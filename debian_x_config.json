@@ -7,7 +7,7 @@
  "NEED_TESTING" : [],
  "NEED_BUILD_STAGE" : {
     "heirloom" : {"build_script" : "./source_builds/heirloom/build_heirloom.sh",
-                  "sub_template" : "./source_builds/heirloom/heirloom_build_stage.jinja" 
+                  "BUILD_DOCKERFILE_TEMPLATE" : "./source_builds/heirloom/heirloom_build_stage.jinja" 
                  }
  },
  "IN_CORE" : ["csh",

@@ -7,11 +7,11 @@
  "NEED_COMMUNITY" : ["ion-shell", "tcsh", "oksh"],
  "NEED_TESTING" : ["elvish"],
  "NEED_BUILD_STAGE" : {
-    "heirloom" : {"build_script" : "./source_builds/heirloom/build_heirloom.sh",
-                  "build_dockerfile_template" : ""
+    "heirloom" : {"BUILD_SCRIPT" : "./source_builds/heirloom/build_heirloom.sh",
+                  "BUILD_DOCKERFILE_TEMPLATE" : ""
                  },
-    "rc" :       {"build_script" : "./source_builds/rc/build_rc.sh",
-                  "build_dockerfile_template" : ""
+    "rc" :       {"BUILD_SCRIPT" : "./source_builds/rc/build_rc.sh",
+                  "BUILD_DOCKERFILE_TEMPLATE" : ""
                  }
  },
  "IN_CORE" : ["bash",
