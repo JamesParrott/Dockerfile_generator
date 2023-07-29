@@ -1,20 +1,37 @@
-# ARG base_image=alpine
-# ARG base_image_tag=3.18.2
-
+{% if packages is none -%}
+{% set pkgs = NEED_EDGE + NEED_COMMUNITY + NEED_TESTING + list(NEED_BUILD_STAGE) + IN_CORE -%}
+{% else -%}
 {% set pkgs = packages.split() -%}
+{% endif -%}
+
+{% set base_tag = BASE_TAG -%}
+
+{% if pkgs|select("in", NEED_EDGE) or pkgs|select("in", NEED_TESTING) -%}
+{% set base_tag = EDGE_TAG -%}
+{% endif -%}
+
 {% set builder = None -%}
 {% set previous_builder = None -%}
-{% set previous_builder_binaries_dir = '/all_the_shells' -%}
+{% set previous_builder_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR -%}
+
+ARG BASE_IMAGE={{ BASE_IMAGE }}
+ARG BASE_TAG={{ base_tag }}
+
 {% macro build_in_own_stage(package_name, builder_image = None, binaries_dir = None) -%}
-{% if package_name in pkgs -%}
 {% set previous_builder = builder -%}
-{% if builder_image is none -%}
-{% set builder_image = base_image -%}
-{% endif -%}
 {% set builder = package_name + '_builder' -%}
 {% do pkgs.remove(package_name) -%}
+{% if builder_image is none -%}
+{% set builder_image = "${BASE_IMAGE}:${BASE_TAG}" -%}
+{% endif -%}
 
 FROM {{ builder_image }} as {{ builder }}
+
+WORKDIR /tmp
+
+COPY {{ NEED_BUILD_STAGE[package_name]["build_script"] }} .
+
+RUN ./build_{{ package_name }}.sh
 
 {% if previous_builder -%}
 {% if binaries_dir is none -%}
@@ -23,52 +40,25 @@ FROM {{ builder_image }} as {{ builder }}
 COPY --from={{ previous_builder }} {{ previous_builder_binaries_dir }}:{{ binaries_dir }}
 
 {% endif -%}
-
-COPY 
-
-RUN ./build_{{ package_name }}.sh
-
 {% set previous_builder_binaries_dir = binaries_dir -%}
-{% endif -%}
 {% endmacro -%}
 
+{% for pkg in NEED_BUILD_STAGE|select("in", pkgs) -%}
+build_in_own_stage(pkg)
+{% endfor -%}
 
+FROM "${base_image}:${base_image_tag}"
 
-{% if 'heirloom' in pkgs -%}
-{% do pkgs.remove('heirloom') -%}
-{% set builder = 'heirloom_builder' -%}
-
-FROM heirloom_build_step as {{ builder }}
-
-RUN ./build_heirloom.sh
-
-
-{% set previous_builder = builder -%}
-{% endif -%}
-{% if 'rc' in pkgs -%}
-{% do pkgs.remove('rc') -%}
-{% set previous_builder = builder -%}
-{% set builder = 'rc_builder' -%}
-
-FROM rc_build_step as {{ builder }}
-
-{% if previous_builder -%}
-COPY --from={{ previous_builder }} /all_the_shells:/all_the_shells
-
-{% endif -%}
-RUN ./build_rc.sh
-
-
+{% set core_pkgs = pkgs|reject("in", NEED_BUILD_STAGE)|reject("in", NEED_TESTING) -%}
+{% if core_pkgs -%}
+RUN {{ PKG_MGR_INSTALL_FROM_DEFAULT_REPOS.format(pkgs='    ' + '\\\n    '.join(core_pkgs)) }}
 {% endif -%}
 
-FROM {{ base_image }}:{{ base_image_tag }} as base
+{% set testing_only_pkgs = pkgs|select("in", NEED_TESTING) -%}
+{% if testing_only_pkgs -%}
+RUN {{ PKG_MGR_INSTALL_FROM_TESTING.format(pkgs='    ' + '\\\n    '.join(testing_only_pkgs)) }}
+{% endif -%}
 
 {% if builder -%}
-COPY --from={{ builder }} {{ previous_builder_binaries_dir }}:/
-
+COPY --from={{ builder }} {{ previous_builder_binaries_dir }}:{{ RUNNER_BINARIES_DIR }}
 {% endif -%}
-# ARG PKG_MGR_APPS
-# ENV PKG_MGR_APPS=${PKG_MGR_APPS:-"bash"}
-# RUN apk add --no-cache ${PKG_MGR_APPS}
-
-RUN apk add --no-cache {{ ' '.join(pkgs) }}

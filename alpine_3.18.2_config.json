@@ -1,6 +1,8 @@
-{"base_image" : "alpine",
- "base_image_tag" : "3.18.2",
- "edge_tag" : "edge",
+{"BASE_IMAGE" : "alpine",
+ "BASE_TAG" : "3.18.2",
+ "EDGE_TAG" : "edge",
+ "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/builder/installation/", 
+ "RUNNER_BINARIES_DIR" : "/",
  "NEED_EDGE" : [],
  "NEED_COMMUNITY" : ["ion-shell", "tcsh", "oksh"],
  "NEED_TESTING" : ["elvish"],
@@ -13,5 +15,7 @@
               "dash",
               "fish",
               "zsh"
-             ]
+             ],
+ "PKG_MGR_INSTALL_FROM_DEFAULT_REPOS" : "apk add --no-cache {pkgs}",
+ "PKG_MGR_INSTALL_FROM_TESTING" : "apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ {pkgs}"
 }
