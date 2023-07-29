@@ -1,31 +1,74 @@
-ARG base_image=alpine
-ARG base_image_tag=3.18.2
+# ARG base_image=alpine
+# ARG base_image_tag=3.18.2
 
-{% set build_step_used = False -%}
-{% if 'heirloom' in packages -%}
-{% set packages = packages.replace('heirloom','') -%}
-{% set build_step_used = True -%}
-FROM heirloom_build_step as builder
+{% set pkgs = packages.split() -%}
+{% set builder = None -%}
+{% set previous_builder = None -%}
+{% set previous_builder_binaries_dir = '/all_the_shells' -%}
+{% macro build_in_own_stage(package_name, builder_image = None, binaries_dir = None) -%}
+{% if package_name in pkgs -%}
+{% set previous_builder = builder -%}
+{% if builder_image is none -%}
+{% set builder_image = base_image -%}
+{% endif -%}
+{% set builder = package_name + '_builder' -%}
+{% do pkgs.remove(package_name) -%}
 
-COPY --from=builder /all_the_shells:/all_the_shells
+FROM {{ builder_image }} as {{ builder }}
+
+{% if previous_builder -%}
+{% if binaries_dir is none -%}
+{% set binaries_dir = previous_builder_binaries_dir -%}
+{% endif -%}
+COPY --from={{ previous_builder }} {{ previous_builder_binaries_dir }}:{{ binaries_dir }}
 
 {% endif -%}
 
-{% if 'rc' in packages -%}
-{% set packages = packages.replace('rc','') -%}
-{% set build_step_used = True -%}
-FROM rc_build_step as builder
+COPY 
 
-COPY --from=builder /all_the_shells:/all_the_shells
+RUN ./build_{{ package_name }}.sh
+
+{% set previous_builder_binaries_dir = binaries_dir -%}
+{% endif -%}
+{% endmacro -%}
+
+
+
+{% if 'heirloom' in pkgs -%}
+{% do pkgs.remove('heirloom') -%}
+{% set builder = 'heirloom_builder' -%}
+
+FROM heirloom_build_step as {{ builder }}
+
+RUN ./build_heirloom.sh
+
+
+{% set previous_builder = builder -%}
+{% endif -%}
+{% if 'rc' in pkgs -%}
+{% do pkgs.remove('rc') -%}
+{% set previous_builder = builder -%}
+{% set builder = 'rc_builder' -%}
+
+FROM rc_build_step as {{ builder }}
+
+{% if previous_builder -%}
+COPY --from={{ previous_builder }} /all_the_shells:/all_the_shells
+
+{% endif -%}
+RUN ./build_rc.sh
+
+
 {% endif -%}
 
-FROM $base_image:$base_image_tag as base
+FROM {{ base_image }}:{{ base_image_tag }} as base
 
-{% if build_step_used -%}
-COPY --from=builder /all_the_shells:/
+{% if builder -%}
+COPY --from={{ builder }} {{ previous_builder_binaries_dir }}:/
+
 {% endif -%}
-
 # ARG PKG_MGR_APPS
 # ENV PKG_MGR_APPS=${PKG_MGR_APPS:-"bash"}
 # RUN apk add --no-cache ${PKG_MGR_APPS}
-RUN apk add --no-cache {{packages|replace('  ',' ')|replace('" ','"')|replace(' "','"')|replace("' ","'")|replace(" '","'")}}
+
+RUN apk add --no-cache {{ ' '.join(pkgs) }}

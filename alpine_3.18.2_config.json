@@ -1,0 +1,17 @@
+{"base_image" : "alpine",
+ "base_image_tag" : "3.18.2",
+ "edge_tag" : "edge",
+ "NEED_EDGE" : [],
+ "NEED_COMMUNITY" : ["ion-shell", "tcsh", "oksh"],
+ "NEED_TESTING" : ["elvish"],
+ "NEED_BUILD_STAGE" : {
+    "heirloom" : {"build_script" : "./source_builds/heirloom/build_heirloom.sh",
+                  "sub_template" : "./source_builds/heirloom/heirloom_build_stage.jinja" 
+                 }
+ },
+ "IN_CORE" : ["bash",
+              "dash",
+              "fish",
+              "zsh"
+             ]
+}
