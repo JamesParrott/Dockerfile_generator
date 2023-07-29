@@ -29,10 +29,15 @@ FROM {{ builder_image }} as {{ builder }}
 
 WORKDIR /tmp
 
+{% set build_template = NEED_BUILD_STAGE[package_name]["build_dockerfile_template"] -%}
+{% if build_template -%}
+{% include build_template -%}
+{% else -%}
 COPY {{ NEED_BUILD_STAGE[package_name]["build_script"] }} .
 
 RUN ./build_{{ package_name }}.sh
 
+{% endif -%}
 {% if previous_builder -%}
 {% if binaries_dir is none -%}
 {% set binaries_dir = previous_builder_binaries_dir -%}

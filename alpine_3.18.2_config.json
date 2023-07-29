@@ -8,7 +8,7 @@
  "NEED_TESTING" : ["elvish"],
  "NEED_BUILD_STAGE" : {
     "heirloom" : {"build_script" : "./source_builds/heirloom/build_heirloom.sh",
-                  "sub_template" : "./source_builds/heirloom/heirloom_build_stage.jinja" 
+                  "build_dockerfile_template" : ""
                  }
  },
  "IN_CORE" : ["bash",
