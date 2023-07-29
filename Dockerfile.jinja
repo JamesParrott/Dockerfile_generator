@@ -51,7 +51,7 @@ RUN ./build_{{ package_name }}.sh
 {% endif -%}
 
 {% if builder.previous is not none -%}
-COPY --from={{ builder.previous }} {{ builder.previous_binaries_dir }}:{{ binaries_dir }}
+COPY --from={{ builder.previous }} {{ builder.previous_binaries_dir }} {{ binaries_dir }}
 
 {% endif -%}
 {% set builder.previous_binaries_dir = binaries_dir -%}
@@ -61,7 +61,7 @@ COPY --from={{ builder.previous }} {{ builder.previous_binaries_dir }}:{{ binari
 {{ build_in_own_stage(pkg) }}
 {% endfor -%}
 
-FROM "${base_image}:${base_image_tag}"
+FROM "${BASE_IMAGE}:${BASE_TAG}"
 
 {% set core_pkgs = pkgs|reject("in", NEED_BUILD_STAGE)|reject("in", NEED_TESTING)|list() -%}
 {% if core_pkgs|length >= 1 -%}
@@ -76,5 +76,5 @@ RUN {{ PKG_MGR_INSTALL_FROM_TESTING.format(pkgs=' \\\n    ' + '\\\n    '.join(te
 {% endif -%}
 
 {% if builder.name is not none -%}
-COPY --from={{ builder.name }} {{ builder.previous_binaries_dir }}:{{ RUNNER_BINARIES_DIR }}
+COPY --from={{ builder.name }} {{ builder.previous_binaries_dir }} {{ RUNNER_BINARIES_DIR }}
 {% endif -%}
