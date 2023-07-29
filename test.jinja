@@ -1,0 +1,13 @@
+{% set foo = [0] -%}
+{% macro input(name, value='', type='text', size=20) -%}
+    <input type="{{ type }}" name="{{ name }}" value="{{
+        value|e }}" size="{{ size }}">
+{% endmacro -%}
+{{ input('blah') }}
+{{ foo }}
+{% set i = namespace(y=9) -%}
+{% for x in range(8) -%}
+{% set i.y = 7*x + 10 -%}
+{{ x }}, {{ i.y }}
+{% endfor %}
+{{ i.y }}

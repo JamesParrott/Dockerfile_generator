@@ -1,13 +1,16 @@
 {"BASE_IMAGE" : "alpine",
  "BASE_TAG" : "3.18.2",
  "EDGE_TAG" : "edge",
- "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/builder/installation/", 
+ "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/runner_root_dir/", 
  "RUNNER_BINARIES_DIR" : "/",
  "NEED_EDGE" : [],
  "NEED_COMMUNITY" : ["ion-shell", "tcsh", "oksh"],
  "NEED_TESTING" : ["elvish"],
  "NEED_BUILD_STAGE" : {
     "heirloom" : {"build_script" : "./source_builds/heirloom/build_heirloom.sh",
+                  "build_dockerfile_template" : ""
+                 },
+    "rc" :       {"build_script" : "./source_builds/rc/build_rc.sh",
                   "build_dockerfile_template" : ""
                  }
  },
