@@ -1,11 +1,29 @@
-{% macro render_commands(pkgs, commands, commands_order, builder) -%}
-{% for command_num in commands_order -%}
-{% if command_num == 0 -%}
-{% if builder.name is not none -%}
-COPY --from={{ builder.name }} {{ builder.previous_binaries_dir }} {{ RUNNER_BINARIES_DIR }}
+
+{% set builder = namespace(
+                    name = None,
+                    previous = None,
+                    previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
+                    ) -%}
+
+
+{% macro render_commands(pkgs, commands, commands_order, builder_info = None) -%}
+{% if builder_info is none -%}
+{% set builder_info = builder -%}
 {% endif -%}
+
+{% for command_num in commands_order -%}
+
+{% if command_num == 0 -%}
+
+{% if builder_info.name is not none -%}
+COPY --from={{ builder_info.name }} {{ builder_info.previous_binaries_dir }} {{ RUNNER_BINARIES_DIR }}
+{% endif -%}
+
 {% else -%}
 {% set command = commands[command_num] -%}
+
+
+
 {% if command.supported_parameters|length == 0 -%}
 {{ commands[command_num].format_string }}
 {% else -%}

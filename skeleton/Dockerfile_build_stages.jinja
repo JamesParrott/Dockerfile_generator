@@ -5,7 +5,7 @@
                     previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
                     ) -%}
 
-{% macro add_and_record_build_stage(package_name, builder_info= None, builder_image = None, binaries_dir = None) -%}
+{% macro render_and_record_build_stage(package_name, builder_info= None, builder_image = None, binaries_dir = None) -%}
 
 {% if builder_info is none -%}
 {% set builder_info = builder -%}

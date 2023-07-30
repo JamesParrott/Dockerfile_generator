@@ -1,7 +1,7 @@
-{% block setup -%}
-
 
 {% set pkgs = packages.split() -%}
+
+{% block metadata -%}
 
 {# {% if packages is none -%}
 {% set pkgs = NEED_EDGE + NEED_COMMUNITY + NEED_TESTING + list(NEED_BUILD_STAGE) + IN_CORE -%}
@@ -9,38 +9,36 @@
 {% set pkgs = packages.split() -%}
 {% endif -%} #}
 
-{% set base_tag = BASE_TAG -%}
+{% set base_tag = namespace(name=BASE_TAG) -%}
 
-{% if ( pkgs|select("in", NEED_EDGE)|list()|length >= 1 or 
+{# {% if ( pkgs|select("in", NEED_EDGE)|list()|length >= 1 or 
         pkgs|select("in", NEED_TESTING)|list()|length >= 1 ) -%}
 {% set base_tag = EDGE_TAG -%}
-{% endif -%}
+{% endif -%} #}
 
 {% for command_num, special_tag in NEED_SPECIAL_TAGS.items() -%}
 {% if pkgs|select("in", COMMANDS[command_num].supported_parameters)|list()|length >= 1 -%}
-{% set base_tag = special_tag -%}
+{% set base_tag.name = special_tag -%}
 {% endif -%}
 {% endfor -%}
 
-{% endblock -%}
-
-{% block metadata -%}
-
 ARG BASE_IMAGE={{ BASE_IMAGE }}
-ARG BASE_TAG={{ base_tag }}
+ARG BASE_TAG={{ base_tag.name }}
 
 {% endblock -%}
 
-{% block build_stages -%}
 {% set builder = namespace(
                     name = None,
                     previous = None,
                     previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
                     ) -%}
-{% from helper.jinja import add_and_record_build_stage -%}
+
+{% block build_stages -%}
+
+{% from Dockerfile_build_stages.jinja import render_and_record_build_stage -%}
 
 {% for pkg in BUILD_STAGES|select("in", pkgs) -%}
-{{ add_and_record_build_stage(pkg, builder) }}
+{{ render_and_record_build_stage(pkg, builder) }}
 {% endfor -%}
 
 {% endblock -%}
