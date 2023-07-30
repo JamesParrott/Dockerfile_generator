@@ -38,7 +38,7 @@ ARG BASE_TAG={{ base_tag.name }}
 {% from Dockerfile_build_stages.jinja import render_and_record_build_stage -%}
 
 {% for pkg in BUILD_STAGES|select("in", pkgs) -%}
-{{ render_and_record_build_stage(pkg, builder) }}
+{{ render_and_record_build_stage(pkg, BUILD_STAGES, builder) }}
 {% endfor -%}
 
 {% endblock -%}
@@ -49,7 +49,7 @@ FROM "${BASE_IMAGE}:${BASE_TAG}"
 {% block commands -%}
 
 {% from Dockerfile_commands import render_commands -%}
-{{ render_commands(pkgs, commands, commands_order, builder) }}
+{{ render_commands(pkgs, commands, commands_order, RUNNER_BINARIES_DIR, builder) }}
 
 {% endblock -%}
 

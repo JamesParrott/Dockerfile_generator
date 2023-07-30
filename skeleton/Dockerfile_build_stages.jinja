@@ -5,16 +5,38 @@
                     previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
                     ) -%}
 
-{% macro render_and_record_build_stage(package_name, builder_info= None, builder_image = None, binaries_dir = None) -%}
+{% macro render_and_record_build_stage(package_name, build_stages, builder_info= None, builder_image = None, binaries_dir = None) -%}
+
+{# package_name: str
+   build_stages: Dict[str, Dict[str, str]], e.g.:  {
+    "heirloom" : {"BUILD_SCRIPT" : "./source_builds/heirloom/build_heirloom.sh",
+                  "BUILD_DOCKERFILE_TEMPLATE" : ""
+                 },
+    "rc" :       {"BUILD_SCRIPT" : "./source_builds/rc/build_rc.sh",
+                  "BUILD_DOCKERFILE_TEMPLATE" : ""
+                 }
+ },
+   
+   builder_info: namespace[name: str, previous: str, previous_binaries_dir: str]
+   
+   NOTE: To render Dockerfiles that build correctly, all calls to render_and_record_build_stage 
+   in the same template must be passed the same builder instance.  This ensures 
+   correct references to the previous build stage names and compiled artefacts' directories
+   between multiple build stages, and in the runner.
+   
+   builder_image: str
+   binaries_dir: str #}
 
 {% if builder_info is none -%}
 {% set builder_info = builder -%}
 {% endif -%}
 
+
+
 {% set builder_info.previous = builder_info.name -%}
 {% set builder_info.name = package_name + '_builder' -%}
 
-{% do pkgs.remove(package_name) -%}
+{# {% do pkgs.remove(package_name) -%} #}
 {% if builder_image is none -%}
 {% set builder_image = "${BASE_IMAGE}:${BASE_TAG}" -%}
 {% endif -%}
@@ -23,12 +45,12 @@ FROM {{ builder_image }} as {{ builder_info.name }}
 
 WORKDIR /tmp
 
-{% set build_template = NEED_BUILD_STAGE[package_name]["BUILD_DOCKERFILE_TEMPLATE"] -%}
+{% set build_template = build_stages[package_name]["BUILD_DOCKERFILE_TEMPLATE"] -%}
 {% if build_template|length >= 1 -%}
 {% include build_template -%}
 {% endif -%}
 
-{% set build_script = NEED_BUILD_STAGE[package_name]["BUILD_SCRIPT"] -%}
+{% set build_script = build_stages[package_name]["BUILD_SCRIPT"] -%}
 {% if build_script|length >= 1 -%}
 COPY {{ build_script }} .
 
