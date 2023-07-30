@@ -1,9 +1,10 @@
-{% set foo = [0] -%}
+{% set foo = namespace(bar=0) -%}
 {% macro input(name, value='', type='text', size=20) -%}
     <input type="{{ type }}" name="{{ name }}" value="{{
         value|e }}" size="{{ size }}">
+{% set foo.bar = foo.bar + 1 -%}    
 {% endmacro -%}
-{{ input('blah') }}
+{{ input('blah', foo) }}
 {{ foo }}
 {% set i = namespace(y=9) -%}
 {% for x in range(8) -%}

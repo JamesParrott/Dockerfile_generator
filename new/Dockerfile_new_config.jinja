@@ -57,7 +57,6 @@ RUN ./{{ build_script }}
 COPY --from={{ builder.previous }} {{ builder.previous_binaries_dir }} {{ binaries_dir }}
 
 {% endif -%}
-
 {% set builder.previous_binaries_dir = binaries_dir -%}
 {% endmacro -%}
 

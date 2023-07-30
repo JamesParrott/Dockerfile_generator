@@ -1,0 +1,48 @@
+
+{% set builder = namespace(
+                    name = None,
+                    previous = None,
+                    previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
+                    ) -%}
+
+{% macro add_and_record_build_stage(package_name, builder_info= None, builder_image = None, binaries_dir = None) -%}
+
+{% if builder_info is none -%}
+{% set builder_info = builder -%}
+{% endif -%}
+
+{% set builder_info.previous = builder_info.name -%}
+{% set builder_info.name = package_name + '_builder' -%}
+
+{% do pkgs.remove(package_name) -%}
+{% if builder_image is none -%}
+{% set builder_image = "${BASE_IMAGE}:${BASE_TAG}" -%}
+{% endif -%}
+
+FROM {{ builder_image }} as {{ builder_info.name }}
+
+WORKDIR /tmp
+
+{% set build_template = NEED_BUILD_STAGE[package_name]["BUILD_DOCKERFILE_TEMPLATE"] -%}
+{% if build_template|length >= 1 -%}
+{% include build_template -%}
+{% endif -%}
+
+{% set build_script = NEED_BUILD_STAGE[package_name]["BUILD_SCRIPT"] -%}
+{% if build_script|length >= 1 -%}
+COPY {{ build_script }} .
+
+RUN ./{{ build_script }}
+
+{% endif -%}
+
+{% if binaries_dir is none -%}
+{% set binaries_dir = builder_info.previous_binaries_dir -%}
+{% endif -%}
+
+{% if builder_info.previous is not none -%}
+COPY --from={{ builder_info.previous }} {{ builder_info.previous_binaries_dir }} {{ binaries_dir }}
+
+{% endif -%}
+{% set builder_info.previous_binaries_dir = binaries_dir -%}
+{% endmacro -%}

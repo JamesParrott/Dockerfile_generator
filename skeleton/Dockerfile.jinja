@@ -1,3 +1,4 @@
+{% block metadata -%}
 
 {% if packages is none -%}
 {% set pkgs = NEED_EDGE + NEED_COMMUNITY + NEED_TESTING + list(NEED_BUILD_STAGE) + IN_CORE -%}
@@ -12,60 +13,30 @@
 {% set base_tag = EDGE_TAG -%}
 {% endif -%}
 
+{% endblock -%}
+
+
+ARG BASE_IMAGE={{ BASE_IMAGE }}
+ARG BASE_TAG={{ base_tag }}
+
+{% block build_stages -%}
 {% set builder = namespace(
                     name = None,
                     previous = None,
                     previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
                     ) -%}
-
-ARG BASE_IMAGE={{ BASE_IMAGE }}
-ARG BASE_TAG={{ base_tag }}
-
-
-{% macro build_in_own_stage(package_name, builder_image = None, binaries_dir = None) -%}
-
-{% set builder.previous = builder.name -%}
-{% set builder.name = package_name + '_builder' -%}
-
-{% do pkgs.remove(package_name) -%}
-{% if builder_image is none -%}
-{% set builder_image = "${BASE_IMAGE}:${BASE_TAG}" -%}
-{% endif -%}
-
-FROM {{ builder_image }} as {{ builder.name }}
-
-WORKDIR /tmp
-
-{% set build_template = NEED_BUILD_STAGE[package_name]["BUILD_DOCKERFILE_TEMPLATE"] -%}
-{% if build_template|length >= 1 -%}
-{% include build_template -%}
-{% endif -%}
-
-{% set build_script = NEED_BUILD_STAGE[package_name]["BUILD_SCRIPT"] -%}
-{% if build_script|length >= 1 -%}
-COPY {{ build_script }} .
-
-RUN ./{{ build_script }}
-
-{% endif -%}
-
-{% if binaries_dir is none -%}
-{% set binaries_dir = builder.previous_binaries_dir -%}
-{% endif -%}
-
-{% if builder.previous is not none -%}
-COPY --from={{ builder.previous }} {{ builder.previous_binaries_dir }} {{ binaries_dir }}
-
-{% endif -%}
-
-{% set builder.previous_binaries_dir = binaries_dir -%}
-{% endmacro -%}
+{% from helper.jinja import add_and_record_build_stage -%}
 
 {% for pkg in NEED_BUILD_STAGE|select("in", pkgs) -%}
 {{ build_in_own_stage(pkg) }}
 {% endfor -%}
 
+{% endblock -%}
+
 FROM "${BASE_IMAGE}:${BASE_TAG}"
+
+
+{% block commands -%}
 
 {% set core_pkgs = pkgs|reject("in", NEED_BUILD_STAGE)|reject("in", NEED_TESTING)|list() -%}
 {% if core_pkgs|length >= 1 -%}
@@ -82,3 +53,5 @@ RUN {{ PKG_MGR_INSTALL_FROM_TESTING.format(pkgs=' \\\n    ' + '\\\n    '.join(te
 {% if builder.name is not none -%}
 COPY --from={{ builder.name }} {{ builder.previous_binaries_dir }} {{ RUNNER_BINARIES_DIR }}
 {% endif -%}
+
+{% endblock -%}
