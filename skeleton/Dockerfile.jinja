@@ -1,10 +1,13 @@
-{% block metadata -%}
+{% block setup -%}
 
-{% if packages is none -%}
+
+{% set pkgs = packages.split() -%}
+
+{# {% if packages is none -%}
 {% set pkgs = NEED_EDGE + NEED_COMMUNITY + NEED_TESTING + list(NEED_BUILD_STAGE) + IN_CORE -%}
 {% else -%}
 {% set pkgs = packages.split() -%}
-{% endif -%}
+{% endif -%} #}
 
 {% set base_tag = BASE_TAG -%}
 
@@ -13,11 +16,20 @@
 {% set base_tag = EDGE_TAG -%}
 {% endif -%}
 
+{% for command_num, special_tag in NEED_SPECIAL_TAGS.items() -%}
+{% if pkgs|select("in", COMMANDS[command_num].supported_parameters)|list()|length >= 1 -%}
+{% set base_tag = special_tag -%}
+{% endif -%}
+{% endfor -%}
+
 {% endblock -%}
 
+{% block metadata -%}
 
 ARG BASE_IMAGE={{ BASE_IMAGE }}
 ARG BASE_TAG={{ base_tag }}
+
+{% endblock -%}
 
 {% block build_stages -%}
 {% set builder = namespace(
@@ -27,8 +39,8 @@ ARG BASE_TAG={{ base_tag }}
                     ) -%}
 {% from helper.jinja import add_and_record_build_stage -%}
 
-{% for pkg in NEED_BUILD_STAGE|select("in", pkgs) -%}
-{{ build_in_own_stage(pkg) }}
+{% for pkg in BUILD_STAGES|select("in", pkgs) -%}
+{{ add_and_record_build_stage(pkg, builder) }}
 {% endfor -%}
 
 {% endblock -%}
@@ -38,7 +50,13 @@ FROM "${BASE_IMAGE}:${BASE_TAG}"
 
 {% block commands -%}
 
-{% set core_pkgs = pkgs|reject("in", NEED_BUILD_STAGE)|reject("in", NEED_TESTING)|list() -%}
+{% from Dockerfile_commands import render_commands -%}
+{{ render_commands(pkgs, commands, commands_order, builder) }}
+
+{% endblock -%}
+
+
+{# {% set core_pkgs = pkgs|reject("in", NEED_BUILD_STAGE)|reject("in", NEED_TESTING)|list() -%}
 {% if core_pkgs|length >= 1 -%}
 RUN {{ PKG_MGR_INSTALL_FROM_DEFAULT_REPOS.format(pkgs='\\\n    ' + ' \\\n    '.join(core_pkgs)) }}
 
@@ -48,10 +66,4 @@ RUN {{ PKG_MGR_INSTALL_FROM_DEFAULT_REPOS.format(pkgs='\\\n    ' + ' \\\n    '.j
 {% if testing_only_pkgs|length >= 1 -%}
 RUN {{ PKG_MGR_INSTALL_FROM_TESTING.format(pkgs=' \\\n    ' + '\\\n    '.join(testing_only_pkgs)) }}
 
-{% endif -%}
-
-{% if builder.name is not none -%}
-COPY --from={{ builder.name }} {{ builder.previous_binaries_dir }} {{ RUNNER_BINARIES_DIR }}
-{% endif -%}
-
-{% endblock -%}
+{% endif -%} #}

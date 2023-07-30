@@ -1,0 +1,22 @@
+{% macro render_commands(pkgs, commands, commands_order, builder) -%}
+{% for command_num in commands_order -%}
+{% if command_num == 0 -%}
+{% if builder.name is not none -%}
+COPY --from={{ builder.name }} {{ builder.previous_binaries_dir }} {{ RUNNER_BINARIES_DIR }}
+{% endif -%}
+{% else -%}
+{% set command = commands[command_num] -%}
+{% if command.supported_parameters|length == 0 -%}
+{{ commands[command_num].format_string }}
+{% else -%}
+{% set parameters = pkgs|select("in", command.supported_parameters) -%}
+{% if parameters|list()|length >= 1 -%}
+{% set parameters_str = command.seperator.join(parameters) -%}
+{% if parameters|list()|length == 1 -%}
+{% set parameters_str = command.prefix + parameters_str -%}
+{% endif -%}
+{{ commands[command_num].format_string.format(parameters = parameters_str) }}
+{% endif -%}
+{% endif -%}
+{% endfor -%}
+{% endmacro -%}
