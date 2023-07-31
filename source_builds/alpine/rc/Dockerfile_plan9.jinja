@@ -1,0 +1,22 @@
+FROM {{ builder_image }} as {{ builder_info.name }}
+
+RUN apk update --no-cache
+
+RUN apk add \
+    gcc \
+    libc-dev \
+    linux-headers \
+    perl \ 
+    git
+
+ENV PLAN9=/usr/local/plan9
+
+WORKDIR $PLAN9
+RUN git clone --depth=1 https://github.com/9fans/plan9port . 
+RUN ./INSTALL
+
+ENV PATH=$PATH:$PLAN9/bin
+
+RUN mkdir -p {{ binaries_dir }}/bin/
+
+RUN cp $PLAN9/bin/rc {{ binaries_dir }}/bin/
