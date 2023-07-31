@@ -1,42 +1,45 @@
-ARG BASE_IMAGE=debian
-ARG BASE_TAG=bullseye-slim
 
+ARG BASE_IMAGE=alpine
+ARG BASE_TAG=edge
 
-FROM ${BASE_IMAGE}:${BASE_TAG} as heirloom_builder
+FROM ${BASE_IMAGE}:${BASE_TAG} as rc_builder
 
-RUN apt-get update -y && \
-    apt-get install -y \
-    make \
+RUN apk update --no-cache
+
+RUN apk add \
     gcc \
-    bzip2 \
-    wget
+    libc-dev \
+    linux-headers \
+    perl \ 
+    git
 
-WORKDIR /tmp
+ENV PLAN9=/usr/local/plan9
 
-RUN wget http://downloads.sourceforge.net/heirloom/heirloom-sh-050706.tar.bz2
+WORKDIR $PLAN9
+RUN git clone --depth=1 https://github.com/9fans/plan9port . 
+RUN ./INSTALL
 
-RUN tar -jxvf heirloom-sh-050706.tar.bz2
 
-RUN cd heirloom-sh-050706 && \
-    make
 
-RUN mkdir -p /tmp/runner_root_dir/bin/
+RUN mkdir -p /tmp/runner_root_dir/usr/local
 
-RUN cp heirloom-sh-050706/sh /tmp/runner_root_dir/bin/heirloom-sh
+RUN mv /usr/local/plan9 /tmp/runner_root_dir/usr/local
+
 
 
 FROM "${BASE_IMAGE}:${BASE_TAG}"
 
-RUN apt-get update -y && \
-    apt-get install -y \
-    csh \
+RUN apk add --no-cache \
+    ion-shell \
     tcsh \
-    ksh \
+    oksh \
     zsh \
     fish \
-    ash \
+    bash \
     dash
 
-COPY --from=heirloom_builder /tmp/runner_root_dir /
+RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ elvish
+
+COPY --from=rc_builder /tmp/runner_root_dir/ /
 
 

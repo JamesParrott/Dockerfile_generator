@@ -33,7 +33,7 @@ Expects commands and commands_order to be the same format respectively as:
 {% for command_num in commands_order -%}
 {% if command_num == 0 -%}
 {% if builder_info.name is not none -%}
-COPY --from={{ builder_info.name }} {{ builder_info.previous_binaries_dir }} {{ runner_binaries_dir }}
+COPY --from={{ builder_info.name }} {{ builder_info.previous_binaries_dir }}/ {{ runner_binaries_dir }}
 
 {% endif -%}
 {% else -%}

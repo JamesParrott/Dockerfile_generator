@@ -15,8 +15,10 @@ WORKDIR $PLAN9
 RUN git clone --depth=1 https://github.com/9fans/plan9port . 
 RUN ./INSTALL
 
-ENV PATH=$PATH:$PLAN9/bin
+{# ENV PATH=$PATH:$PLAN9/bin #}
 
-RUN mkdir -p {{ binaries_dir }}/bin/
+RUN mkdir -p {{ binaries_dir }}/usr/local
 
-RUN cp $PLAN9/bin/rc {{ binaries_dir }}/bin/
+RUN mv /usr/local/plan9 {{ binaries_dir }}/usr/local
+
+{# RUN cp ${PLAN9} {{ binaries_dir }}/usr/local #}
