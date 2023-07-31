@@ -1,4 +1,3 @@
-
 {% set builder = namespace(
                     name = None,
                     previous = None,
@@ -14,16 +13,18 @@ commands_order: Iterable[int]
 Command zero is especially constructed to copy a dir (e.g. of binaries) from the build stages to the runner image.  
 Others are 1-indexed into commands.
 
-Expects commands and commands_order to be the same format as:
- "COMMANDS" : [
+Expects commands and commands_order to be the same format respectively as:
+ [
       {"format_string" : "RUN apk add --no-cache {parameters}", 
        "supported_parameters" : [git,
                                  gcc
                                 ],
        "prefix" : "\\\n    ",
        "separator" : " \\\n    " }, 
+ ...
+ ]
 
- "COMMANDS_ORDER" : [1, 2, 0]
+ [1, 2, 0]
 -#}
 {% if builder_info is none -%}
     {% set builder_info = builder -%}

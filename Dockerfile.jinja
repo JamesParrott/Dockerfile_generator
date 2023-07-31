@@ -1,21 +1,15 @@
 {% set pkgs = packages.split() -%}
-
 {% block metadata -%}
-
-{% set base_tag = namespace(name=BASE_TAG) -%}
-
-{% for special_tag, command_num in NEED_SPECIAL_TAGS.items() -%}
-        {% if pkgs|select("in", COMMANDS[command_num - 1].supported_parameters)|list()|length >= 1 -%}
-        {% set base_tag.name = special_tag -%}
-        {% endif -%}
-{% endfor -%}
-
-ARG BASE_IMAGE={{ BASE_IMAGE }}
-ARG BASE_TAG={{ base_tag.name }}
-
-
+{% from 'Dockerfile_metadata.jinja' import render_labels, render_image_and_tag_args with context -%}
+{{ render_labels() }}
+{{ render_image_and_tag_args(
+        BASE_IMAGE,
+        BASE_TAG,
+        pkgs,
+        NEED_SPECIAL_TAGS,
+        COMMANDS
+        ) }}
 {% endblock -%}
-
 {% set builder = namespace(
                     name = None,
                     previous = None,
@@ -24,7 +18,7 @@ ARG BASE_TAG={{ base_tag.name }}
 
 {% block build_stages -%}
 
-{% from 'Dockerfile_build_stages.jinja' import render_and_record_build_stage with context -%}
+{% from 'Dockerfile_build_stages.jinja' import render_and_record_build_stage -%}
 
 {% for pkg in BUILD_STAGES|select("in", pkgs) -%}
     {{ render_and_record_build_stage(pkg, BUILD_STAGES, builder) }}
@@ -38,16 +32,3 @@ FROM "${BASE_IMAGE}:${BASE_TAG}"
 {% from 'Dockerfile_commands.jinja' import render_commands -%}
 {{ render_commands(pkgs, COMMANDS, COMMANDS_ORDER, RUNNER_BINARIES_DIR, builder) }}
 {% endblock -%}
-
-
-{# {% set core_pkgs = pkgs|reject("in", NEED_BUILD_STAGE)|reject("in", NEED_TESTING)|list() -%}
-{% if core_pkgs|length >= 1 -%}
-RUN {{ PKG_MGR_INSTALL_FROM_DEFAULT_REPOS.format(pkgs='\\\n    ' + ' \\\n    '.join(core_pkgs)) }}
-
-{% endif -%}
-
-{% set testing_only_pkgs = pkgs|select("in", NEED_TESTING)|list() -%}
-{% if testing_only_pkgs|length >= 1 -%}
-RUN {{ PKG_MGR_INSTALL_FROM_TESTING.format(pkgs=' \\\n    ' + '\\\n    '.join(testing_only_pkgs)) }}
-
-{% endif -%} #}

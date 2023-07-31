@@ -1,0 +1,49 @@
+
+{% macro render_labels(max_number=60) -%}
+{% for i in range(max_number) -%}
+{% set val = self._TemplateReference__context.resolve('label_%s' % i ) -%}
+{% if val|length == 0 -%}
+    {% set val = self._TemplateReference__context.resolve('LABEL_%s' % i ) -%}
+{% endif -%} 
+{% if val|length == 0 -%}
+    {% if i >= 1 -%}
+        {% break -%}
+    {% endif -%}
+{% else -%} 
+LABEL {{ val }}
+{% endif -%}
+{% endfor -%}
+{% endmacro -%}
+
+{% macro render_image_and_tag_args(
+    base_image,
+    base_tag,
+    pkgs,
+    need_special_tags,
+    commands
+    ) -%}
+{#  base_image: str
+    base_tag: str
+    pkgs: Container[str],
+    need_special_tags: Dict[str, int],
+
+    commands : Container[Dict[supported_parameters: Container[str]]], e.g.:
+    [
+        {"format_string" : "RUN apk add --no-cache {parameters}", 
+        "supported_parameters" : [git,
+                                  gcc
+                                 ],
+        "prefix" : "\\\n    ",
+        "separator" : " \\\n    " }, 
+    ...
+    ]
+-#}
+{% set base_tag = namespace(name=base_tag) -%}
+{% for special_tag, command_num in need_special_tags.items() -%}
+{% if pkgs|select("in", commands[command_num - 1].supported_parameters)|length >= 1 -%}
+{% set base_tag.name = special_tag -%}
+{% endif -%}
+{% endfor -%}
+ARG BASE_IMAGE={{ BASE_IMAGE }}
+ARG BASE_TAG={{ base_tag.name }}
+{% endmacro -%}
