@@ -24,7 +24,10 @@
                                  "zsh",
                                  "fish",
                                  "ash",
-                                 "dash"
+                                 "dash",
+                                 "yash",
+                                 "rc",
+                                 "mksh"
                                 ],
           "prefix" : "\\\n    ",
           "separator" : " \\\n    " }

@@ -19,12 +19,22 @@
                                  "zsh",
                                  "ion-shell",
                                  "tcsh",
-                                 "oksh"
+                                 "oksh",
+                                 "loksh",
+                                 "yash",
+                                 "rssh"
                                 ],
        "prefix" : "\\\n    ",
        "separator" : " \\\n    " },
       "install_from_testing" : {"format_string" : "RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ {parameters}", 
-       "supported_parameters" : ["elvish"],
+       "supported_parameters" : ["elvish",
+                                 "hilbish",
+                                 "nsh",
+                                 "xonsh",
+                                 "mrsh",
+                                 "imrsh",
+                                 "nushell"
+                              ],
        "prefix" : " \\\n    ",
        "separator" : "\\\n    " }
                               },
