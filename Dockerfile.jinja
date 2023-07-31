@@ -11,8 +11,8 @@
 {% endfor -%}
 
 ARG BASE_IMAGE={{ BASE_IMAGE }}
-
 ARG BASE_TAG={{ base_tag.name }}
+
 
 {% endblock -%}
 
@@ -24,7 +24,7 @@ ARG BASE_TAG={{ base_tag.name }}
 
 {% block build_stages -%}
 
-{% from 'Dockerfile_build_stages.jinja' import render_and_record_build_stage -%}
+{% from 'Dockerfile_build_stages.jinja' import render_and_record_build_stage with context -%}
 
 {% for pkg in BUILD_STAGES|select("in", pkgs) -%}
     {{ render_and_record_build_stage(pkg, BUILD_STAGES, builder) }}

@@ -6,10 +6,10 @@
  "RUNNER_BINARIES_DIR" : "/",
 
  "BUILD_STAGES" : {
-    "heirloom" : {"BUILD_SCRIPT" : "./source_builds/heirloom/build_heirloom.sh",
+    "heirloom" : {"BUILD_SCRIPT" : "./source_builds/alpine/heirloom/build_heirloom.sh",
                   "BUILD_DOCKERFILE_TEMPLATE" : ""
                  },
-    "rc" :       {"BUILD_SCRIPT" : "./source_builds/rc/build_rc.sh",
+    "rc" :       {"BUILD_SCRIPT" : "./source_builds/alpine/rc/build_rc.sh",
                   "BUILD_DOCKERFILE_TEMPLATE" : ""
                  }
  },

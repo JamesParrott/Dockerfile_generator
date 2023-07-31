@@ -1,41 +1,42 @@
-ARG BASE_IMAGE=alpine
+ARG BASE_IMAGE=debian
+ARG BASE_TAG=bullseye-slim
 
-ARG BASE_TAG=edge
 
 FROM ${BASE_IMAGE}:${BASE_TAG} as heirloom_builder
 
-WORKDIR /tmp
-
-COPY ./source_builds/heirloom/build_heirloom.sh .
-
-RUN chmod +x ./build_heirloom.sh
-
-RUN ./build_heirloom.sh
-
-
-FROM ${BASE_IMAGE}:${BASE_TAG} as rc_builder
+RUN apt-get update -y && \
+    apt-get install -y \
+    make \
+    gcc \
+    bzip2 \
+    wget
 
 WORKDIR /tmp
 
-COPY ./source_builds/rc/build_rc.sh .
+RUN wget http://downloads.sourceforge.net/heirloom/heirloom-sh-050706.tar.bz2
 
-RUN chmod +x ./build_rc.sh
+RUN tar -jxvf heirloom-sh-050706.tar.bz2
 
-RUN ./build_rc.sh
+RUN cd heirloom-sh-050706 && \
+    make
 
-COPY --from=heirloom_builder /tmp/runner_root_dir/ /tmp/runner_root_dir/
+RUN mkdir -p /tmp/runner_root_dir/bin/
+
+RUN cp heirloom-sh-050706/sh /tmp/runner_root_dir/bin/heirloom-sh
 
 
 FROM "${BASE_IMAGE}:${BASE_TAG}"
 
-RUN apk add --no-cache \
-    bash \
+RUN apt-get update -y && \
+    apt-get install -y \
+    csh \
+    tcsh \
+    ksh \
+    zsh \
     fish \
-    ion-shell \
-    oksh
+    ash \
+    dash
 
-RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ elvish
-
-COPY --from=rc_builder /tmp/runner_root_dir/ /
+COPY --from=heirloom_builder /tmp/runner_root_dir /
 
 
