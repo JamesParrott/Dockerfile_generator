@@ -1,15 +1,17 @@
-{% set pkgs = packages.split()|list()-%}
+{% set pkgs = packages.split()|list() -%}
 {% block metadata -%}
-{% import 'macros/metadata.jinja' as metadata with context -%}
-{{ metadata.render_labels() }}
-{{ metadata.render_image_and_tag_args(
+{% import 'macros/labels.jinja' as labels with context -%}
+{{ labels.render_labels() }}
+{% import 'macros/image_and_tag.jinja' as image_and_tag with context -%}
+{{ image_and_tag.render_image_and_tag_args(
         BASE_IMAGE,
         BASE_TAG,
         pkgs,
         NEED_SPECIAL_TAGS,
+        UNUSED_PARAMETERS_COMMAND,
         COMMANDS,
         ) }}
-{% endblock -%}
+{% endblock metadata -%}
 {% set builder = namespace(
         name = None,
         previous = None,
@@ -22,13 +24,13 @@
 
 {% for pkg in BUILD_STAGES|select("in", pkgs) -%}
     {{ build_stages.render_and_record_build_stage(
-            pkg,
-            BUILD_STAGES,
-            builder,
-            ) }}
+                                        pkg,
+                                        BUILD_STAGES,
+                                        builder,
+                                        ) }}
 {% endfor -%}
 
-{% endblock -%}
+{% endblock build_stages -%}
 
 FROM "${BASE_IMAGE}:${BASE_TAG}"
 
@@ -41,4 +43,4 @@ FROM "${BASE_IMAGE}:${BASE_TAG}"
         UNUSED_PARAMETERS_COMMAND,
         RUNNER_BINARIES_DIR,
         builder) }}
-{% endblock -%}
+{% endblock runner_commands -%}

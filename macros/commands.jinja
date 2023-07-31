@@ -1,3 +1,43 @@
+{% macro remove_other_command_parameters(
+                commands,
+                parameters,
+                unused_parameters_command
+                ) -%}
+{#  parameters: Container[str]
+    unused_parameters_command: str
+
+    Expects commands to be of the same format as:
+    {
+      "install_from_main_and_community" : {"format_string" : "RUN apk add --no-cache {parameters}", 
+       "supported_parameters" : ["bash",
+                                 "dash",
+                                 "fish",
+                                 "zsh",
+                                 "ion-shell",
+                                 "tcsh",
+                                 "oksh"
+                                ],
+       "prefix" : "\\\n    ",
+       "separator" : " \\\n    " },
+      "install_from_testing" : {"format_string" : "RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ {parameters}", 
+       "supported_parameters" : ["elvish"],
+       "prefix" : " \\\n    ",
+       "separator" : "\\\n    " }
+                              }, 
+-#}
+{% for command_name, other_command in commands.items() -%}
+{% if command_name == unused_parameters_command -%}
+{% continue -%}
+{% endif -%}
+{% for parameter in other_command.supported_parameters %}
+{% if parameter in parameters -%}
+{% do parameters.remove(parameter) -%}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+{% endmacro -%}
+
+
 {% set builder = namespace(
                     name = None,
                     previous = None,
@@ -20,7 +60,7 @@ unused_parameters_command: str
 runner_binaries_dir: str
 builder_info: namespace(name: str, previous: str, previous_binaries_dir: str)
 
-Expects commands and commands_in_order to be the same format respectively as:
+Expects commands as above, and commands_in_order to be the same format as:
 {
       "install_from_main_and_community" : {"format_string" : "RUN apk add --no-cache {parameters}", 
        "supported_parameters" : ["bash",
@@ -72,11 +112,11 @@ e.g. they can be used to setup ssh accounts for each shell.
 {% set parameters = pkgs|select("in", command.supported_parameters)|list() -%}
 {% else -%}
 {% set parameters = pkgs.copy() -%}
-{% for command_name, other_command in commands.items() -%}
-{% if command_name != unused_parameters_command -%}
-{% set parameters = parameters|reject("in", other_command.supported_parameters)|list() -%}
-{% endif -%}
-{% endfor -%}
+{% do remove_other_command_parameters(
+                        commands,
+                        parameters,
+                        unused_parameters_command
+                        ) -%}
 {% endif -%}
 {% if parameters|length >= 1 -%}
 {% set parameters_str = command.separator.join(parameters) -%}

@@ -1,31 +1,19 @@
 
-{% macro render_labels(max_number=60) -%}
-{% for i in range(max_number) -%}
-{% set val = self._TemplateReference__context.resolve('label_%s' % i ) -%}
-{% if val|length == 0 -%}
-    {% set val = self._TemplateReference__context.resolve('LABEL_%s' % i ) -%}
-{% endif -%} 
-{% if val|length == 0 -%}
-    {% if i >= 1 -%}
-        {% break -%}
-    {% endif -%}
-{% else -%} 
-LABEL {{ val }}
-{% endif -%}
-{% endfor -%}
-{% endmacro -%}
+{% from 'macros/commands.jinja' import remove_other_command_parameters -%}
 
 {% macro render_image_and_tag_args(
     base_image,
     base_tag,
     pkgs,
     need_special_tags,
+    default_command,
     commands
     ) -%}
 {#  base_image: str
     base_tag: str
     pkgs: Container[str],
     need_special_tags: Dict[str, int],
+    default_command: str
 
     commands : Container[Dict[supported_parameters: Container[str]]], e.g.:
     [
@@ -40,7 +28,17 @@ LABEL {{ val }}
 -#}
 {% set base_tag = namespace(name=base_tag) -%}
 {% for name, special_tag in need_special_tags.items() -%}
-{% if pkgs|select("in", commands[name].supported_parameters)|list()|length >= 1 -%}
+{% if name == default_command -%}
+{% set parameters = pkgs.copy() -%}
+{% do remove_other_command_parameters(
+                        commands,
+                        parameters,
+                        default_command
+                        ) -%}
+{% else -%}
+{% set parameters = pkgs|select("in", commands[name].supported_parameters)|list() -%}
+{% endif -%}
+{% if parameters|length >= 1 -%}
 {% set base_tag.name = special_tag -%}
 {% endif -%}
 {% endfor -%}

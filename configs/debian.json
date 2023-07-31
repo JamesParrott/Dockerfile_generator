@@ -32,5 +32,7 @@
 
  "COMMANDS_ORDER" : ["install_from_default_repos",
                      "BUILD_STAGES"
-                    ]
+                    ],
+ "UNUSED_PARAMETERS_COMMAND" : "install_from_default_repos"
+
 }

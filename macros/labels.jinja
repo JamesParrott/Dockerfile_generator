@@ -1,0 +1,16 @@
+
+{% macro render_labels(max_number=60) -%}
+{% for i in range(max_number) -%}
+{% set val = self._TemplateReference__context.resolve('label_%s' % i ) -%}
+{% if val|length == 0 -%}
+    {% set val = self._TemplateReference__context.resolve('LABEL_%s' % i ) -%}
+{% endif -%} 
+{% if val|length == 0 -%}
+    {% if i >= 1 -%}
+        {% break -%}
+    {% endif -%}
+{% else -%} 
+LABEL {{ val }}
+{% endif -%}
+{% endfor -%}
+{% endmacro -%}
