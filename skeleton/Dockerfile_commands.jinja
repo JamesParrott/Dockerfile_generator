@@ -5,7 +5,6 @@
                     previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
                     ) -%}
 
-
 {% macro render_commands(pkgs, commands, commands_order, runner_binaries_dir, builder_info = None) -%}
 
 {#  
@@ -27,42 +26,37 @@ Expects commands and commands_order to be the same format as:
 
  "COMMANDS_ORDER" : [1, 2, 0]
 #}
-
 {% if builder_info is none -%}
 {% set builder_info = builder -%}
 {% endif -%}
 
 {% for command_num in commands_order -%}
-
 {% if command_num == 0 -%}
-
-{% if builder_info.name is not none -%}
+      {% if builder_info.name is not none -%}
 COPY --from={{ builder_info.name }} {{ builder_info.previous_binaries_dir }} {{ runner_binaries_dir }}
-{% endif -%}
-
+      {% endif -%}
 {% else -%}
-{% set command = commands[command_num - 1] -%}
-
-
-{# If there are no supported parameters, render the format string verbatim,
-   to support any hard coded Docker command, or to hardcode installation of
-   packages that are always needed for your app, so they can be omitted from pkgs.
-#}
-{% if command.supported_parameters|length == 0 -%}
-{{ command.format_string }}
-{% else -%}
-{# packages are intended to be allowed to appear in multiple commands,
-   and they are not restricted to RUN package_manager install ... 
-   e.g. they can be used to setup ssh accounts for each shell.
-#}
-{% set parameters = pkgs|select("in", command.supported_parameters) -%}
-{% if parameters|list()|length >= 1 -%}
-{% set parameters_str = command.seperator.join(parameters) -%}
-{% if parameters|list()|length == 1 -%}
-{% set parameters_str = command.prefix + parameters_str -%}
-{% endif -%}
-{{ command.format_string.format(parameters = parameters_str) }}
-{% endif -%}
+      {% set command = commands[command_num - 1] -%}
+      {# If there are no supported parameters, render the format string verbatim,
+      to support any hard coded Docker command, or to hardcode installation of
+      packages that are always needed for your app, so they can be omitted from pkgs.
+      #}
+      {% if command.supported_parameters|length == 0 -%}
+      {{ command.format_string }}
+      {% else -%}
+            {# packages are intended to be allowed to appear in multiple commands,
+            and they are not restricted to RUN package_manager install ... 
+            e.g. they can be used to setup ssh accounts for each shell.
+            #}
+            {% set parameters = pkgs|select("in", command.supported_parameters) -%}
+            {% if parameters|list()|length >= 1 -%}
+            {% set parameters_str = command.seperator.join(parameters) -%}
+                  {% if parameters|list()|length == 1 -%}
+                  {% set parameters_str = command.prefix + parameters_str -%}
+                  {% endif -%}
+            {{ command.format_string.format(parameters = parameters_str) }}
+            {% endif -%}
+      {% endif -%}
 {% endif -%}
 {% endfor -%}
 {% endmacro -%}

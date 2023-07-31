@@ -1,6 +1,6 @@
 {"BASE_IMAGE" : "alpine",
  "BASE_TAG" : "3.18.2",
- "NEED_SPECIAL_TAGS" : {"2" : "edge"},
+ "NEED_SPECIAL_TAGS" : {"edge" : 2},
 
  "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/runner_root_dir/", 
  "RUNNER_BINARIES_DIR" : "/",

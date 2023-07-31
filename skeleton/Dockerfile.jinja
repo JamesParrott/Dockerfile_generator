@@ -1,25 +1,13 @@
-
 {% set pkgs = packages.split() -%}
 
 {% block metadata -%}
 
-{# {% if packages is none -%}
-{% set pkgs = NEED_EDGE + NEED_COMMUNITY + NEED_TESTING + list(NEED_BUILD_STAGE) + IN_CORE -%}
-{% else -%}
-{% set pkgs = packages.split() -%}
-{% endif -%} #}
-
 {% set base_tag = namespace(name=BASE_TAG) -%}
 
-{# {% if ( pkgs|select("in", NEED_EDGE)|list()|length >= 1 or 
-        pkgs|select("in", NEED_TESTING)|list()|length >= 1 ) -%}
-{% set base_tag = EDGE_TAG -%}
-{% endif -%} #}
-
-{% for command_num, special_tag in NEED_SPECIAL_TAGS.items() -%}
-{% if pkgs|select("in", COMMANDS[command_num].supported_parameters)|list()|length >= 1 -%}
-{% set base_tag.name = special_tag -%}
-{% endif -%}
+{% for special_tag, command_num in NEED_SPECIAL_TAGS.items() -%}
+        {% if pkgs|select("in", COMMANDS[command_num - 1].supported_parameters)|list()|length >= 1 -%}
+        {% set base_tag.name = special_tag -%}
+        {% endif -%}
 {% endfor -%}
 
 ARG BASE_IMAGE={{ BASE_IMAGE }}
@@ -35,7 +23,7 @@ ARG BASE_TAG={{ base_tag.name }}
 
 {% block build_stages -%}
 
-{% from Dockerfile_build_stages.jinja import render_and_record_build_stage -%}
+{% from 'Dockerfile_build_stages.jinja' import render_and_record_build_stage -%}
 
 {% for pkg in BUILD_STAGES|select("in", pkgs) -%}
 {{ render_and_record_build_stage(pkg, BUILD_STAGES, builder) }}
@@ -45,10 +33,9 @@ ARG BASE_TAG={{ base_tag.name }}
 
 FROM "${BASE_IMAGE}:${BASE_TAG}"
 
-
 {% block commands -%}
 
-{% from Dockerfile_commands import render_commands -%}
+{% from 'Dockerfile_commands.jinja' import render_commands -%}
 {{ render_commands(pkgs, commands, commands_order, RUNNER_BINARIES_DIR, builder) }}
 
 {% endblock -%}
