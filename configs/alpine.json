@@ -1,18 +1,18 @@
 {"BASE_IMAGE" : "alpine",
  "BASE_TAG" : "3.18.2",
- "NEED_SPECIAL_TAGS" : {"edge" : 2},
+ "NEED_SPECIAL_TAGS" : {"install_from_testing" : "edge"},
 
  "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/runner_root_dir", 
  "RUNNER_BINARIES_DIR" : "/",
 
  "BUILD_STAGES" : {
     "rc" :       {"BUILD_SCRIPT" : "",
-                  "BUILD_DOCKERFILE_TEMPLATE" : "./source_builds/alpine/rc/Dockerfile_plan9.jinja"
+                  "BUILD_DOCKERFILE_TEMPLATE" : "./source_builds/alpine/rc/Dockerfile_plan9_build_stage.jinja"
                  }
  },
 
- "COMMANDS" : [
-      {"format_string" : "RUN apk add --no-cache {parameters}", 
+ "COMMANDS" : {
+      "install_from_main_and_community" : {"format_string" : "RUN apk add --no-cache {parameters}", 
        "supported_parameters" : ["bash",
                                  "dash",
                                  "fish",
@@ -23,11 +23,15 @@
                                 ],
        "prefix" : "\\\n    ",
        "separator" : " \\\n    " },
-      {"format_string" : "RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ {parameters}", 
+      "install_from_testing" : {"format_string" : "RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ {parameters}", 
        "supported_parameters" : ["elvish"],
        "prefix" : " \\\n    ",
        "separator" : "\\\n    " }
-      ],
+                              },
 
- "COMMANDS_ORDER" : [1, 2, 0]
+ "COMMANDS_ORDER" : ["install_from_main_and_community",
+                     "install_from_testing",
+                     "BUILD_STAGES"
+                    ],
+ "UNUSED_PARAMETERS_COMMAND" : "install_from_main_and_community"
 }

@@ -16,6 +16,8 @@ RUN tar -jxvf heirloom-sh-050706.tar.bz2
 RUN cd heirloom-sh-050706 && \
     make
 
+# Thanks to: https://github.com/dwmkerr/docker-shells/
+
 RUN mkdir -p {{ binaries_dir }}/bin/
 
 RUN cp heirloom-sh-050706/sh {{ binaries_dir }}/bin/heirloom-sh

@@ -1,34 +1,44 @@
-{% set pkgs = packages.split() -%}
+{% set pkgs = packages.split()|list()-%}
 {% block metadata -%}
-{% from 'Dockerfile_metadata.jinja' import render_labels, render_image_and_tag_args with context -%}
-{{ render_labels() }}
-{{ render_image_and_tag_args(
+{% import 'macros/metadata.jinja' as metadata with context -%}
+{{ metadata.render_labels() }}
+{{ metadata.render_image_and_tag_args(
         BASE_IMAGE,
         BASE_TAG,
         pkgs,
         NEED_SPECIAL_TAGS,
-        COMMANDS
+        COMMANDS,
         ) }}
 {% endblock -%}
 {% set builder = namespace(
-                    name = None,
-                    previous = None,
-                    previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
-                    ) -%}
+        name = None,
+        previous = None,
+        previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
+        ) -%}
 
 {% block build_stages -%}
 
-{% from 'Dockerfile_build_stages.jinja' import render_and_record_build_stage -%}
+{% import 'macros/build_stages.jinja' as build_stages -%}
 
 {% for pkg in BUILD_STAGES|select("in", pkgs) -%}
-    {{ render_and_record_build_stage(pkg, BUILD_STAGES, builder) }}
+    {{ build_stages.render_and_record_build_stage(
+            pkg,
+            BUILD_STAGES,
+            builder,
+            ) }}
 {% endfor -%}
 
 {% endblock -%}
 
 FROM "${BASE_IMAGE}:${BASE_TAG}"
 
-{% block commands -%}
-{% from 'Dockerfile_commands.jinja' import render_commands -%}
-{{ render_commands(pkgs, COMMANDS, COMMANDS_ORDER, RUNNER_BINARIES_DIR, builder) }}
+{% block runner_commands -%}
+{% import 'macros/commands.jinja' as commands -%}
+{{ commands.render_commands(
+        pkgs,
+        COMMANDS,
+        COMMANDS_ORDER,
+        UNUSED_PARAMETERS_COMMAND,
+        RUNNER_BINARIES_DIR,
+        builder) }}
 {% endblock -%}
