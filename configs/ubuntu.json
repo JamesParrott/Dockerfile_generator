@@ -16,7 +16,7 @@
 
  "COMMANDS" : {
       "install_from_default_repos" : {
-          "format_string" : "RUN apt-get update -y && \\\n    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \\\n {parameters}", 
+          "format_string" : "RUN apt-get update -y && \\\n    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \\\n {parameters} && \\\n    apt-get clean \\\n    rm -rf /var/lib/apt/lists/*", 
           "supported_parameters" : [
                                  "csh",
                                  "tcsh",
