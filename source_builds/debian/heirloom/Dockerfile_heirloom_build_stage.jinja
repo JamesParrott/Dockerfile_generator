@@ -9,7 +9,7 @@ RUN apt-get update -y && \
 
 WORKDIR {{ working_dir }}
 
-RUN wget http://downloads.sourceforge.net/heirloom/heirloom-sh-050706.tar.bz2
+RUN wget --progress=dot:giga http://downloads.sourceforge.net/heirloom/heirloom-sh-050706.tar.bz2
 
 RUN tar -jxvf heirloom-sh-050706.tar.bz2
 
