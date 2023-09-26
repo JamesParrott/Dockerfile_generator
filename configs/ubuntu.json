@@ -28,8 +28,9 @@
                                  "yash",
                                  "rc",
                                  "mksh",
+                                 "ca-certificates",
                                  "cmake",
-                                 "gcc",
+                                 "g++",
                                  "git",
                                  "libboost-dev"
                                 ],
