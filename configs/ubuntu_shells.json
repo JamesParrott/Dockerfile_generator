@@ -27,12 +27,7 @@
                                  "dash",
                                  "yash",
                                  "rc",
-                                 "mksh",
-                                 "ca-certificates",
-                                 "cmake",
-                                 "g++",
-                                 "git",
-                                 "libboost-dev"
+                                 "mksh"
                                 ],
           "prefix" : "\\\n    ",
           "separator" : " \\\n    " }

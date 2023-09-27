@@ -1,0 +1,38 @@
+{"BASE_IMAGE" : "ubuntu",
+ "BASE_TAG" : "jammy",
+ "NEED_SPECIAL_TAGS" : {},
+
+ "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/runner_root_dir", 
+ "RUNNER_BINARIES_DIR" : "/",
+
+ "BUILD_STAGES" : {
+    "heirloom" : {"BUILD_SCRIPT" : "",
+                  "BUILD_DOCKERFILE_TEMPLATE" : "source_builds/debian/heirloom/Dockerfile_heirloom_build_stage.jinja"
+                 },
+    "rc" :       {"BUILD_SCRIPT" : "./source_builds/debian/build_rc.sh",
+                  "BUILD_DOCKERFILE_TEMPLATE" : ""
+                 }
+ },
+
+ "COMMANDS" : {
+      "install_from_default_repos" : {
+          "format_string" : "RUN apt-get update -y && \\\n    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends {parameters} && \\\n    apt-get clean && \\\n    rm -rf /var/lib/apt/lists/*", 
+          "supported_parameters" : [
+                                 "gcc",
+                                 "make",
+                                 "cmake",
+                                 "g++",
+                                 "libboost-dev",
+                                 "ca-certificates",
+                                 "git"
+                                ],
+          "prefix" : "\\\n    ",
+          "separator" : " \\\n    " }
+     },
+
+ "COMMANDS_ORDER" : ["install_from_default_repos",
+                     "BUILD_STAGES"
+                    ],
+ "UNUSED_PARAMETERS_COMMAND" : "install_from_default_repos"
+
+}
