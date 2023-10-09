@@ -3,12 +3,10 @@
    macros/version_pinner.jinja
 -#}
 {% import 'macros/version_pinner.jinja' as versioner -%}
-{% set pipe = joiner(" \\
-    ") %}
+{# {% set pipe = joiner()%} #}
 {# "The incantation" -#}
 RUN apt-get update -y && \\
-    apt-get install --no-install-recommends -y {% for param in parameters -%}
-{{ versioner.version_if_any_for_x_from(param, pkgs) }} {{ pipe() }}
-{% endfor -%} && \\
-    apt-get clean && \\
-    rm -rf /var/lib/apt/lists/*", 
+    apt-get install --no-install-recommends -y{% for param in parameters %} \
+    {{ versioner.version_if_any_for_x_from(param, pkgs) -}}{% endfor %} && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*

@@ -92,7 +92,8 @@ Expects commands as above, and commands_in_order to be the same format as:
 
 {% for name in commands_in_order -%}
 {% if name == "BUILD_STAGES" -%}
-{% if builder_info.name is not none -%}
+{% if builder_info.name is not none %}
+
 COPY --from={{ builder_info.name }} {{ builder_info.previous_binaries_dir }}/ {{ runner_binaries_dir }}
 
 {% endif -%}

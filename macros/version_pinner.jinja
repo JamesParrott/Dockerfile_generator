@@ -2,14 +2,14 @@
 {% if container is mapping() -%}
 {% set val=container.get(x) -%}
 {% if val is string() -%}
-{{ x }}={{ val }}
+{{ x -}}={{ val -}}
 {% else -%}
 {# TODO:  Full Python or Pyodide app that calls the 
           API for Apt-get or apk to check versions,
           if one or more is given in the config -#}
-{{ x }}={{ val[-1] }}
+{{ x -}}={{ val[-1] -}}
 {% endif -%}
 {% else -%}
-{{ x }}
+{{ x -}}
 {% endif -%}
 {% endmacro -%}
