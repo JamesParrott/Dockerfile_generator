@@ -1,4 +1,4 @@
-{"LABEL_1" : "author=\"Coder McCodeFace\"",
+{"LABEL_1" : "author=\"Dockerfile_generator\"",
  "LABEL_2" : "version=\"7.8.9\"",
  "LABEL_3" : "description=\"A Ubuntu Jammy Docker image with a range of different shells installed, and these labels, built using Dockerfile.jinja and ubuntu_shells_labels.json\"",  
  "BASE_IMAGE" : "ubuntu",
