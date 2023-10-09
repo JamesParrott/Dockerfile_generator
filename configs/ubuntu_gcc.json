@@ -13,6 +13,7 @@
 
  "COMMANDS" : {
       "install_from_default_repos" : {
+          "command_template" : "/commands/apt-get.jinja",
           "supported_parameters" : [
                                  "gcc",
                                  "make",
