@@ -32,7 +32,7 @@
 
 {% endblock build_stages -%}
 
-FROM "${BASE_IMAGE}:${BASE_TAG}"
+FROM "${BASE_IMAGE}:${BASE_TAG}" as runner
 
 {% block runner_commands -%}
 {% import 'macros/commands.jinja' as commands -%}
