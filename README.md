@@ -26,8 +26,8 @@
    - Commands ordered from most common to least common, to make
      best use of Docker's build cache.
 
-(*) Not in the default config images - see `/tests/pinned_versions`.  For my use case, I amd using Dockerfile_generator in a parametric testing process.  I want to know if an external dependency from an unpinned version breaks my app that I'm testing (and if a future version of a shell breaks, I may elect to simply drop support for it).  If you require both version pinning for reproducibility Dockerfile_generator supports that, but tests
-based on this may break, and the environments may only be reproducible until a package repository relied on yanks the required version osf something (so perhaps building from source or self-hosting is then required too).
+(*) Not in the default config images - see `/tests/pinned_versions`.  For my use case, I amd using Dockerfile_generator in a parametric testing process.  I want to know if an external dependency from an unpinned version breaks an app, as users will also be using getting that broken dependency.  Alternatively, if you require version pinning for reproducibility, Dockerfile_generator supports that.  But tests
+based on this have an external dependency, so still may break.  Such environments are only be reproducible in practise, until a repository being relied on yanks the required version of a package (so perhaps building from source or self-hosting is then required too).  Let me know what your usage cases are, and I'll see how much demand there is for a versioning system in Python, that does more than read a version requirements string from the config file (e.g. calling package manager APIs, or even Dockerfile test builds)
 
 ## Development
 This Branch is for posterity, the historical record, and published as a warning to others...
