@@ -26,14 +26,16 @@
    - Commands ordered from most common to least common, to make
      best use of Docker's build cache.
 
-(*) Not in the default config images - see `/tests/pinned_versions`.  For my use case, I amd using Dockerfile_generator in a parametric testing process.  I want to know if an external dependency from an unpinned version breaks an app, as users will also be using getting that broken dependency.  Alternatively, if you require version pinning for reproducibility, Dockerfile_generator supports that.  But tests
-based on this have an external dependency, so still may break.  Such environments are only be reproducible in practise, until a repository being relied on yanks the required version of a package (so perhaps building from source or self-hosting is then required too).  Let me know what your usage cases are, and I'll see how much demand there is for a versioning system in Python, that does more than read a version requirements string from the config file (e.g. calling package manager APIs, or even Dockerfile test builds)
+(*) Not in the default config images - see `/tests/pinned_versions`.  For my use case, I use Dockerfile_generator for parametric testing to determine which third party packages (shells) it is possible to support.  I want to know if an external dependency from an unpinned version breaks an app, as users will also be using getting that broken dependency.  Alternatively, if you require version pinning for reproducibility, Dockerfile_generator supports that.  But tests
+based on this have an external dependency, so still may break.  Such environments are only be reproducible in practise, until a repository being relied on yanks the required version of a package (so perhaps building from source or self-hosting is then required too).  Let me know what your usage cases are.  Other possibilities include calling distro or package manager APIs, or even Dockerfile test builds.
 
 ## Development
 This Branch is for posterity, the historical record, and published as a warning to others...
 
 After working on this project again after a gap of a couple of months break, I now fully appreciate the wisdom of not implementing business logic in a templating language...  
 
-This branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  A refactor would be the best long term solution, but the project currently more than fulfills my own needs and passes plenty of tests.
+This branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it contains the hardest to maintain, and outright ugliest code I've ever written.
 
-But it contains the hardest to maintain, and outright ugliest code I've ever written.
+You forgiven for concluding, a full refactor would be the best long term solution, and enable embelishment and other features, e.g. Python.  But the project currently more than fulfills my own needs and passes plenty of tests.
+
+A refactor into a language in which the logic defining our opinionated subset of Dockerfiles, can be implemented much more cleanly than in Jinja 2, would firstly lock all future developers in to that particular implementation.  Secondly, by keeping this project pure Jinja 2, advanced users and devs alike that are willing to learn the basics of Jinja 2, are able to access vastly more flexibility in how they use this project.  Namely, import, template inheritance, overrides, and includes, of any of the constituent parts are all natively supported.   
