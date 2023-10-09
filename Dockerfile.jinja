@@ -41,6 +41,7 @@ FROM "${BASE_IMAGE}:${BASE_TAG}"
         COMMANDS,
         COMMANDS_ORDER,
         UNUSED_PARAMETERS_COMMAND,
+        BUILD_STAGES,
         RUNNER_BINARIES_DIR,
         builder) }}
 {% endblock runner_commands -%}

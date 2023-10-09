@@ -1,3 +1,5 @@
+# Based on the work of Dave Kerr: https://github.com/dwmkerr/docker-shells/
+
 FROM {{ builder_image }} as {{ builder_info.name }}
 
 RUN apt-get update -y && \
@@ -6,9 +8,6 @@ RUN apt-get update -y && \
     gcc \
     bzip2 \
     wget
-
-
-# Thanks to: https://github.com/dwmkerr/docker-shells/
 
 WORKDIR {{ working_dir }}
 

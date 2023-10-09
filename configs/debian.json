@@ -8,9 +8,6 @@
  "BUILD_STAGES" : {
     "heirloom" : {"BUILD_SCRIPT" : "",
                   "BUILD_DOCKERFILE_TEMPLATE" : "source_builds/debian/heirloom/Dockerfile_heirloom_build_stage.jinja"
-                 },
-    "rc" :       {"BUILD_SCRIPT" : "./source_builds/debian/build_rc.sh",
-                  "BUILD_DOCKERFILE_TEMPLATE" : ""
                  }
  },
 

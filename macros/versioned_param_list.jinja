@@ -13,3 +13,8 @@
 {{ x -}}
 {% endif -%}
 {% endmacro -%}
+
+{% macro render(parameters, pkgs) -%}
+    {{ parameters[0] -}}{% for param in parameters[1:] %} \
+    {{ version_if_any_for_x_from(param, pkgs) -}}{% endfor -%}
+{% endmacro -%}

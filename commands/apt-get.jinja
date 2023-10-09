@@ -1,12 +1,11 @@
 {# Sub templates for Dockerfile commands have access to: 
    parameters
-   macros/version_pinner.jinja
+   macros/versioned_param_list.jinja
 -#}
-{% import 'macros/version_pinner.jinja' as versioner -%}
-{# {% set pipe = joiner()%} #}
+{% import 'macros/versioned_param_list.jinja' as param_list -%}
 {# "The incantation" -#}
-RUN apt-get update -y && \\
-    apt-get install --no-install-recommends -y{% for param in parameters %} \
-    {{ versioner.version_if_any_for_x_from(param, pkgs) -}}{% endfor %} && \
+RUN apt-get update -y && \
+    apt-get install --no-install-recommends -y \
+    {{ param_list.render(parameters, pkgs) }} && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

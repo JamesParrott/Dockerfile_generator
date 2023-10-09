@@ -13,6 +13,7 @@
 
  "COMMANDS" : {
       "install_from_main_and_community" : {"format_string" : "RUN apk add --no-cache {parameters}", 
+      "command_template" : "/commands/apk.jinja",
        "supported_parameters" : ["bash",
                                  "dash",
                                  "fish",
@@ -27,6 +28,7 @@
        "prefix" : "\\\n    ",
        "separator" : " \\\n    " },
       "install_from_testing" : {"format_string" : "RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing/ {parameters}", 
+      "command_template" : "/commands/alpine-apk-testing.jinja",
        "supported_parameters" : ["elvish",
                                  "hilbish",
                                  "nsh",
