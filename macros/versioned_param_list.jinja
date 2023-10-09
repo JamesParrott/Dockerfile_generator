@@ -14,7 +14,7 @@
 {% endif -%}
 {% endmacro -%}
 
-{% macro render(parameters, pkgs) -%}
-    {{ parameters[0] -}}{% for param in parameters[1:] %} \
-    {{ version_if_any_for_x_from(param, pkgs) -}}{% endfor -%}
+{% macro render(parameters, supported_parameters) -%}
+    {{ version_if_any_for_x_from(parameters[0], supported_parameters) -}}{% for param in parameters[1:] %} \
+    {{ version_if_any_for_x_from(param, supported_parameters) -}}{% endfor -%}
 {% endmacro -%}

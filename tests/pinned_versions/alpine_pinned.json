@@ -14,29 +14,17 @@
  "COMMANDS" : {
       "install_from_main_and_community" : {
        "command_template" : "/commands/apk.jinja",
-       "supported_parameters" : ["bash",
-                                 "dash",
-                                 "fish",
-                                 "zsh",
-                                 "ion-shell",
-                                 "tcsh",
-                                 "oksh",
-                                 "loksh",
-                                 "yash",
-                                 "rssh"
-                                ],
+       "supported_parameters" : {"bash" : "9.6.7",
+                                 "dash" : "3.4.5",
+                                 "fish": "2.3.4"
+                                },
        "prefix" : "\\\n    ",
        "separator" : " \\\n    " },
       "install_from_testing" : {
        "command_template" : "/commands/alpine-apk-testing.jinja",
-       "supported_parameters" : ["elvish",
-                                 "hilbish",
-                                 "nsh",
-                                 "xonsh",
-                                 "mrsh",
-                                 "imrsh",
-                                 "nushell"
-                              ],
+       "supported_parameters" : {"elvish" : "1.8.9",
+                                 "xonsh" : "4.8.7"
+                                },
        "prefix" : " \\\n    ",
        "separator" : "\\\n    " }
                               },
