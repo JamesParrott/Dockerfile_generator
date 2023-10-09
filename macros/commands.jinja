@@ -3,7 +3,7 @@
                 parameters,
                 unused_parameters_command
                 ) -%}
-{#  parameters: Container[str]
+{#  parameters: List[str]
     unused_parameters_command: str
 
     Expects commands to be of the same format as:
@@ -43,6 +43,8 @@
                     previous = None,
                     previous_binaries_dir = BUILDER_DEFAULT_BINARIES_DIR,
                     ) -%}
+
+
 
 {% macro render_commands(
     pkgs,
@@ -107,13 +109,15 @@ packages that are always needed for your app, so they can be omitted from pkgs.
 {# packages are intended to be allowed to appear in multiple commands,
 and they are not restricted to RUN package_manager install ... 
 e.g. they can be used to setup ssh accounts for each shell.
+-#}
 
+{% if name == unused_parameters_command -%}
+{% set parameters = pkgs|list() -%}
+{#
 The macro remove_other_command_parameters gathers unallocated commands,
 together with commands allocated to unused_parameters_command, 
 into parameters.
 -#}
-{% if name == unused_parameters_command -%}
-{% set parameters = pkgs.copy() -%}
 {% do remove_other_command_parameters(
                         commands,
                         parameters,
@@ -122,17 +126,28 @@ into parameters.
 {% else -%}
 {% set parameters = pkgs|select("in", command.supported_parameters)|list() -%}
 {% endif -%}
-{% if parameters|length >= 1 -%}
-{% set parameters_str = command.separator.join(parameters) -%}
-{# Don't prepend with a prefix if there's only one item in the list 
-(e.g. keep the command to a single line) -#}
+
+
+{% if parameters|length > 1 -%}
+{% include command.command_template -%}
+{% endif -%}
+{#
+{% set parameters_str = command.prefix + p-%}
+This intentionally both supports pkgs being a list and a dict 
+{% for param in parameters[1:] -%}
+{{ val_or_key_if_dict_else_key(param, pkgs) }}
+{% endfor -%}
+
+{% endif %}
+{% set parameters_str = command.separator.join(parameters) -%} 
+Don't prepend with a prefix if there's only one item in the list 
+(e.g. keep the command to a single line) 
 {% if parameters|length > 1 -%}
 {% set parameters_str = command.prefix + parameters_str -%}
 {% endif -%}
-{{ command.format_string.format(parameters = parameters_str) }}
+{{ command.format_string.format(parameters = parameters_str) }} -#}
 
-{% endif -%}
-{% endif -%}
+{% endif -%} 
 {% endif -%}
 {% endfor -%}
 {% endmacro -%}
