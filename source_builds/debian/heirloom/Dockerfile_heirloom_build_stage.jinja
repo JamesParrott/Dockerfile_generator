@@ -1,24 +1,23 @@
 FROM {{ builder_image }} as {{ builder_info.name }}
 
 RUN apt-get update -y && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends\
     make \
     gcc \
     bzip2 \
     wget
 
-WORKDIR {{ working_dir }}
-
-RUN wget --progress=dot:giga http://downloads.sourceforge.net/heirloom/heirloom-sh-050706.tar.bz2
-
-RUN tar -jxvf heirloom-sh-050706.tar.bz2
-
-RUN cd heirloom-sh-050706 && \
-    make
 
 # Thanks to: https://github.com/dwmkerr/docker-shells/
 
-RUN mkdir -p {{ binaries_dir }}/bin/
+WORKDIR {{ working_dir }}
 
-RUN cp heirloom-sh-050706/sh {{ binaries_dir }}/bin/heirloom-sh
+RUN wget --progress=dot:giga http://downloads.sourceforge.net/heirloom/heirloom-sh-050706.tar.bz2 && \
+    tar -jxvf heirloom-sh-050706.tar.bz2
+
+WORKDIR {{ working_dir }}/heirloom-sh-050706
+    
+RUN make && \
+    mkdir -p {{ binaries_dir }}/bin/ && \
+    cp ./sh {{ binaries_dir }}/bin/heirloom-sh
 

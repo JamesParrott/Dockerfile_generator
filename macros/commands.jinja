@@ -107,19 +107,25 @@ packages that are always needed for your app, so they can be omitted from pkgs.
 {# packages are intended to be allowed to appear in multiple commands,
 and they are not restricted to RUN package_manager install ... 
 e.g. they can be used to setup ssh accounts for each shell.
+
+The macro remove_other_command_parameters gathers unallocated commands,
+together with commands allocated to unused_parameters_command, 
+into parameters.
 -#}
-{% if name != unused_parameters_command -%}
-{% set parameters = pkgs|select("in", command.supported_parameters)|list() -%}
-{% else -%}
+{% if name == unused_parameters_command -%}
 {% set parameters = pkgs.copy() -%}
 {% do remove_other_command_parameters(
                         commands,
                         parameters,
                         unused_parameters_command
                         ) -%}
+{% else -%}
+{% set parameters = pkgs|select("in", command.supported_parameters)|list() -%}
 {% endif -%}
 {% if parameters|length >= 1 -%}
 {% set parameters_str = command.separator.join(parameters) -%}
+{# Don't prepend with a prefix if there's only one item in the list 
+(e.g. keep the command to a single line) -#}
 {% if parameters|length > 1 -%}
 {% set parameters_str = command.prefix + parameters_str -%}
 {% endif -%}

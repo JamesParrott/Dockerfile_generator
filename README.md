@@ -8,3 +8,7 @@
 
 ## Usage
 `jinja2 Dockerfile.jinja configs/debian.json --format=json -D packages="ash dash zsh heirloom fish elvish" > Dockerfile`
+
+## Development
+After working this for two periods of a couple of days, each a couple of months apart, I now
+fully appreciate the wisdom of not implementing logic in a templating language...  
