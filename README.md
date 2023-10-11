@@ -34,8 +34,8 @@ This Branch is for posterity, the historical record, and published as a warning 
 
 After working on this project again after a gap of a couple of months break, I now fully appreciate the wisdom of not implementing business logic in a templating language...  
 
-This branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it contains the hardest to maintain, and outright ugliest code I've ever written.
+This branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written does!
 
-You forgiven for concluding, a full refactor would be the best long term solution, and enable embelishment and other features, e.g. Python.  But the project currently more than fulfills my own needs and passes plenty of tests.
+By keeping this project pure Jinja 2, advanced users and devs alike that are willing to learn the basics of Jinja 2, are able to access vastly more flexibility in how they use it, by the native mechanisms of Jinja 2 alone.  Namely: import, template inheritance, overrides, and includes, of any of the sub templates (.jinja files).   
 
-A refactor into a language in which the logic defining our opinionated subset of Dockerfiles, can be implemented much more cleanly than in Jinja 2, would firstly lock all future developers in to that particular implementation.  Secondly, by keeping this project pure Jinja 2, advanced users and devs alike that are willing to learn the basics of Jinja 2, are able to access vastly more flexibility in how they use this project.  Namely, import, template inheritance, overrides, and includes, of any of the constituent parts are all natively supported.   
+A small Python wrapper (that does what we use Jinja2-cli for, without a cli) more suitable for development of extra features (e.g. sending requests to package manager APIs) or defining the Dockerfile generation logic entirely,
