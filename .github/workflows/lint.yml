@@ -50,12 +50,8 @@ jobs:
           cache: 'pip' # caching pip dependencies
 
 
-      - name: Install test tools
-        run: pip install pytest tox
-
-# This step runs the build script.
-      - name: Run build script
-        run: npm run build
+      - name: Install tox
+        run: pip install tox
 
       - name: Run tests
-        run: tox hadolint
+        run: tox run -e hadolint
