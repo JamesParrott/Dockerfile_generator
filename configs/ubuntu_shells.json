@@ -7,16 +7,16 @@
 
  "BUILD_STAGES" : {
     "heirloom" : {"BUILD_SCRIPT" : "",
-                  "BUILD_DOCKERFILE_TEMPLATE" : "source_builds/debian/heirloom/Dockerfile_heirloom_build_stage.jinja"
+                  "BUILD_DOCKERFILE_TEMPLATE" : "build_stage_templates/debian/heirloom/Dockerfile_heirloom_build_stage.jinja"
                  },
-    "rc" :       {"BUILD_SCRIPT" : "./source_builds/debian/build_rc.sh",
+    "rc" :       {"BUILD_SCRIPT" : "./build_stage_templates/debian/build_rc.sh",
                   "BUILD_DOCKERFILE_TEMPLATE" : ""
                  }
  },
 
  "COMMANDS" : {
       "install_from_default_repos" : {
-          "command_template" : "/commands/apt-get.jinja",
+          "command_template" : "/command_templates/apt-get.jinja",
           "supported_parameters" : [
                                  "csh",
                                  "tcsh",

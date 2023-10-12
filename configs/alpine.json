@@ -7,13 +7,13 @@
 
  "BUILD_STAGES" : {
     "rc" :       {"BUILD_SCRIPT" : "",
-                  "BUILD_DOCKERFILE_TEMPLATE" : "./source_builds/alpine/rc/Dockerfile_plan9_build_stage.jinja"
+                  "BUILD_DOCKERFILE_TEMPLATE" : "./build_stage_templates/alpine/rc/Dockerfile_plan9_build_stage.jinja"
                  }
  },
 
  "COMMANDS" : {
       "install_from_main_and_community" : {
-       "command_template" : "/commands/apk.jinja",
+       "command_template" : "/command_templates/apk.jinja",
        "supported_parameters" : ["bash",
                                  "dash",
                                  "fish",
@@ -28,7 +28,7 @@
        "prefix" : "\\\n    ",
        "separator" : " \\\n    " },
       "install_from_testing" : {
-       "command_template" : "/commands/alpine-apk-testing.jinja",
+       "command_template" : "/command_templates/alpine-apk-testing.jinja",
        "supported_parameters" : ["elvish",
                                  "hilbish",
                                  "nsh",

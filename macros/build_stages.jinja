@@ -15,10 +15,10 @@
     ) -%}
 {# package_name: str
    build_stages: Dict[str, Dict[str, str]], e.g.:  {
-    "heirloom" : {"BUILD_SCRIPT" : "./source_builds/heirloom/build_heirloom.sh",
+    "heirloom" : {"BUILD_SCRIPT" : "./build_stage_templates/heirloom/build_heirloom.sh",
                   "BUILD_DOCKERFILE_TEMPLATE" : ""
                  },
-    "rc" :       {"BUILD_SCRIPT" : "./source_builds/rc/build_rc.sh",
+    "rc" :       {"BUILD_SCRIPT" : "./build_stage_templates/rc/build_rc.sh",
                   "BUILD_DOCKERFILE_TEMPLATE" : ""
                  }
  },
