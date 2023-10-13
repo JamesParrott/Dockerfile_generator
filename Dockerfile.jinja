@@ -1,7 +1,5 @@
 {% set pkgs = packages.split()|list() -%}
-{% block metadata -%}
-{% import 'macros/labels.jinja' as labels with context -%}
-{{ labels.render_labels() }}
+{% block base_image_and_tag -%}
 {% import 'macros/image_and_tag.jinja' as image_and_tag with context -%}
 {{ image_and_tag.render_image_and_tag_args(
         BASE_IMAGE,
@@ -11,7 +9,7 @@
         UNUSED_PARAMETERS_COMMAND,
         COMMANDS,
         ) }}
-{% endblock metadata -%}
+{% endblock base_image_and_tag -%}
 {% set builder = namespace(
         name = None,
         previous = None,
@@ -34,6 +32,10 @@
 
 FROM "${BASE_IMAGE}:${BASE_TAG}" as runner
 
+{% block labels -%}
+{% import 'macros/labels.jinja' as labels with context -%}
+{{ labels.render_labels() -}}
+{% endblock labels -%}
 {% block runner_commands -%}
 {% import 'macros/commands.jinja' as commands -%}
 {{ commands.render_commands(
