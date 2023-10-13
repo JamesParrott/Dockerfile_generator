@@ -1,5 +1,6 @@
 
 {% macro render_labels(max_number=60) -%}
+{% set labels=namespace(rendered = false) -%}
 {% for i in range(max_number) -%}
 {% set val = self._TemplateReference__context.resolve('label_%s' % i ) -%}
 {% if val|length == 0 -%}
@@ -11,7 +12,10 @@
     {% endif -%}
 {% else -%} 
 LABEL {{ val }}
-
+{% set labels.rendered = true -%}
 {% endif -%}
 {% endfor -%}
+{% if labels.rendered +%}
+ 
+{% endif -%}
 {% endmacro -%}

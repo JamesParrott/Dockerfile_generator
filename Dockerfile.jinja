@@ -31,10 +31,9 @@
 {% endblock build_stages -%}
 
 FROM "${BASE_IMAGE}:${BASE_TAG}" as runner
-
 {% block labels -%}
 {% import 'macros/labels.jinja' as labels with context -%}
-{{ labels.render_labels() -}}
+{{ labels.render_labels() }}
 {% endblock labels -%}
 {% block runner_commands -%}
 {% import 'macros/commands.jinja' as commands -%}
