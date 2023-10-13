@@ -66,9 +66,8 @@ WORKDIR {{ working_dir }}
 
 COPY {{ build_script }} .
 
-RUN chmod +x ./{{ script_file_name }}
-
-RUN ./{{ script_file_name }}
+RUN chmod +x ./{{ script_file_name }} && \
+    ./{{ script_file_name }}
 
 {% endif -%}
 {% endif -%}
