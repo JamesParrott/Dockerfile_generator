@@ -57,7 +57,7 @@ def _generate_Dockerfile_and_run_hadolint_on_it(
     ) -> tuple[str, subprocess.CompletedProcess]:
     
     subprocess.run(
-        f'jinja2 Dockerfile.jinja {config} --format=json -D packages={params} > {TMP_DOCKERFILE_PATH}',
+        f'jinja2 Dockerfile.jinja {config} --format=json -D params={params} > {TMP_DOCKERFILE_PATH}',
         shell = True,
          )
 
@@ -82,15 +82,18 @@ def versioned(pkgs):
 def _generate_test_data(a = 2, b = None, n = 10):
     for path in pathlib.Path('.').glob('**/*.json'):
 
-        yield str(path), '', True
 
 
         with open(path, 'rt') as f:
-            config = json.load(f)
+            config = json.load(f).get('config', None)
 
+        if config is None:
+            continue
+
+        yield str(path), '', True
 
         params = [param
-                  for command in config.get('COMMANDS', {}).values()
+                  for command in config.get('commands', {}).values()
                   for param in command.get('supported_parameters', []) 
                  ]
 

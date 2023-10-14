@@ -1,12 +1,17 @@
 
-{% macro render_labels(max_number=60) -%}
+{% macro render_labels(
+    config,
+    max_number=60
+    ) -%}
 {% set labels=namespace(rendered = false) -%}
 {% for i in range(max_number) -%}
-{% set val = self._TemplateReference__context.resolve('label_%s' % i ) -%}
+{% set label_name = 'label_%s' % i -%}
+{% set val = config.get(label_name, config.get(label_name.upper(), none)) -%}
+{# {% set val = self._TemplateReference__context.resolve('label_%s' % i ) -%}
 {% if val|length == 0 -%}
     {% set val = self._TemplateReference__context.resolve('LABEL_%s' % i ) -%}
-{% endif -%} 
-{% if val|length == 0 -%}
+{% endif -%}  -#}
+{% if val is none -%}
     {% if i >= 1 -%}
         {% break -%}
     {% endif -%}
@@ -15,7 +20,6 @@ LABEL {{ val }}
 {% set labels.rendered = true -%}
 {% endif -%}
 {% endfor -%}
-{% if labels.rendered +%}
- 
+{% if labels.rendered %}
 {% endif -%}
 {% endmacro -%}

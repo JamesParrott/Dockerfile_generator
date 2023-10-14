@@ -1,47 +1,26 @@
 
-{% from 'macros/commands.jinja' import remove_other_command_parameters -%}
+{% from 'macros/commands.jinja' import filter_unused_parameters_command_and_unallocated_parameters -%}
 
 {% macro render_image_and_tag_args(
-    base_image,
-    base_tag,
-    pkgs,
-    need_special_tags,
-    default_command,
-    commands
-    ) -%}
-{#  base_image: str
-    base_tag: str
-    pkgs: Container[str],
-    need_special_tags: Dict[str, int],
-    default_command: str
+            params,
+            config
+            ) -%}
 
-    commands : Container[Dict[supported_parameters: Container[str]]], e.g.:
-    [
-        {"format_string" : "RUN apk add --no-cache {parameters}", 
-        "supported_parameters" : [git,
-                                  gcc
-                                 ],
-        "prefix" : "\\\n    ",
-        "separator" : " \\\n    " }, 
-    ...
-    ]
--#}
-{% set base_tag = namespace(name=base_tag) -%}
-{% for name, special_tag in need_special_tags.items() -%}
-{% if name == default_command -%}
-{% set parameters = pkgs.copy() -%}
-{% do remove_other_command_parameters(
-                        commands,
-                        parameters,
-                        default_command
-                        ) -%}
+{% set base_tag = namespace(name=config.base_tag) -%}
+{% for name, special_tag in config.need_special_tags.items() -%}
+{% if name == config.unused_parameters_command -%}
+{% set parameters = params.copy() -%}
+{% do filter_unused_parameters_command_and_unallocated_parameters(
+            parameters,
+            config
+            ) -%}
 {% else -%}
-{% set parameters = pkgs|select("in", commands[name].supported_parameters)|list() -%}
+{% set parameters = params|select("in", config.commands[name].supported_parameters)|list() -%}
 {% endif -%}
 {% if parameters|length >= 1 -%}
 {% set base_tag.name = special_tag -%}
 {% endif -%}
 {% endfor -%}
-ARG BASE_IMAGE={{ BASE_IMAGE }}
-ARG BASE_TAG={{ base_tag.name }}
+ARG base_image={{ config.base_image }}
+ARG base_tag={{ base_tag.name }}
 {% endmacro -%}

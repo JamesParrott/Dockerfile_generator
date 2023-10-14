@@ -1,19 +1,20 @@
-{"BASE_IMAGE" : "alpine",
- "BASE_TAG" : "3.18.2",
- "NEED_SPECIAL_TAGS" : {"install_from_testing" : "edge"},
+{"config" : 
+{"base_image" : "alpine",
+ "base_tag" : "3.18.2",
+ "need_special_tags" : {"install_from_testing" : "edge"},
 
- "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/runner_root_dir", 
- "RUNNER_BINARIES_DIR" : "/",
+ "builder_default_binaries_dir": "/tmp/runner_root_dir", 
+ "runner_binaries_dir" : "/",
 
- "BUILD_STAGES" : {
-    "rc" :       {"BUILD_SCRIPT" : "",
-                  "BUILD_DOCKERFILE_TEMPLATE" : "./build_stage_templates/alpine/rc/Dockerfile_plan9_build_stage.jinja"
+ "build_stages" : {
+    "rc" :       {"build_script" : "",
+                  "file_path" : "./build_stage_templates/alpine/rc/Dockerfile_plan9_build_stage.jinja"
                  }
  },
 
- "COMMANDS" : {
+ "commands" : {
       "install_from_main_and_community" : {
-       "command_template" : "/command_templates/apk.jinja",
+       "file_path" : "/command_templates/apk.jinja",
        "supported_parameters" : ["bash",
                                  "dash",
                                  "fish",
@@ -24,11 +25,10 @@
                                  "loksh",
                                  "yash",
                                  "rssh"
-                                ],
-       "prefix" : "\\\n    ",
-       "separator" : " \\\n    " },
+                                ]
+         },
       "install_from_testing" : {
-       "command_template" : "/command_templates/alpine-apk-testing.jinja",
+       "file_path" : "/command_templates/alpine-apk-testing.jinja",
        "supported_parameters" : ["elvish",
                                  "hilbish",
                                  "nsh",
@@ -36,14 +36,14 @@
                                  "mrsh",
                                  "imrsh",
                                  "nushell"
-                              ],
-       "prefix" : " \\\n    ",
-       "separator" : "\\\n    " }
+                              ]
+         }
                               },
 
- "COMMANDS_ORDER" : ["install_from_main_and_community",
+ "commands_order" : ["install_from_main_and_community",
                      "install_from_testing",
-                     "BUILD_STAGES"
+                     "build_stages"
                     ],
- "UNUSED_PARAMETERS_COMMAND" : "install_from_main_and_community"
+ "unused_parameters_command" : "install_from_main_and_community"
+}
 }

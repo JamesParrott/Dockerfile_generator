@@ -1,1 +1,1 @@
-jinja2 Dockerfile.jinja tests/pinned_versions/alpine_pinned.json --format=json -D packages="bash dash fish xonsh elvish"    
+jinja2 Dockerfile.jinja tests/pinned_versions/alpine_pinned.json --format=json -D params="bash dash fish xonsh elvish"    

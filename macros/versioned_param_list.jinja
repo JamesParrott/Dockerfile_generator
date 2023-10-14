@@ -1,5 +1,8 @@
-{% macro version_if_any_for_x_from(x, container) -%}
-{% if container is mapping() -%}
+{% macro version_if_any_for_x_from(
+            x,
+            command
+            ) -%}
+{% if command.supported_parameters is mapping() -%}
 {% set val=container.get(x) -%}
 {% if val is string() -%}
 {{ x -}}{{ val -}}
@@ -14,7 +17,10 @@
 {% endif -%}
 {% endmacro -%}
 
-{% macro render(parameters, supported_parameters) -%}
+{% macro render(
+            parameters,
+            supported_parameters
+            ) -%}
     {{ version_if_any_for_x_from(parameters[0], supported_parameters) -}}{% for param in parameters[1:] %} \
     {{ version_if_any_for_x_from(param, supported_parameters) -}}{% endfor -%}
 {% endmacro -%}
