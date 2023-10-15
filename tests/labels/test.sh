@@ -1,0 +1,1 @@
+jinja2 Dockerfile.jinja tests/pinned_versions/ubuntu_shells_labels.json --format=json -D params="bash dash fish zsh ksh"    
