@@ -51,9 +51,9 @@ def versioned(pkgs):
 
 def rules_to_ignore(pkgs):
     if ENFORCE_ALL_VERSION_PINNING_WARNINGS or versioned(pkgs):
-        return RULES_TO_ALWAYS_IGNORE | VERSION_PINNING_RULES
+        return RULES_TO_ALWAYS_IGNORE
     
-    return RULES_TO_ALWAYS_IGNORE
+    return RULES_TO_ALWAYS_IGNORE | VERSION_PINNING_RULES
 
 
 def _generate_test_data(a = 2, b = None, n = 10) -> Iterator[tuple[pathlib.Path, str, set[str]]]:
@@ -75,7 +75,7 @@ def _generate_test_data(a = 2, b = None, n = 10) -> Iterator[tuple[pathlib.Path,
         if config is None:
             continue
 
-        yield path, '', True
+        yield path, '', RULES_TO_ALWAYS_IGNORE
 
         params = [param
                   for command in config.get('commands', {}).values()

@@ -29,7 +29,6 @@ def _build_image_from(
     return output, result, dockerfile_path
 
 
-# @pytest.mark.skip(reason="Takes too long")
 @pytest.mark.parametrize('config, params, __', _generate_test_data(n=0)) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
 def test_generating_and_building_Dockerfiles(config, params, __):
 
