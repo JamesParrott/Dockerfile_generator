@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from ..fixtures import _generate_test_data, _generate_Dockerfile, VERSION_PINNING_RULES, TMP_DOCKERFILE_PATH
+from ..fixtures import _generate_test_data, _generate_Dockerfile, VERSION_PINNING_RULES, RULES_TO_ALWAYS_IGNORE, TMP_DOCKERFILE_PATH
 
 
 HADOLINT_VERSION = '2.12.0'
@@ -29,13 +29,13 @@ if match[0] != HADOLINT_VERSION:
 
 def _run_hadolint(
     dockerfile_path = TMP_DOCKERFILE_PATH,
-    enforce_version_pinning_warnings = False
+    rules_to_ignore: set[str] = VERSION_PINNING_RULES | RULES_TO_ALWAYS_IGNORE,
     ):
 
-    if enforce_version_pinning_warnings or not VERSION_PINNING_RULES:
-        cmd = f'hadolint {dockerfile_path}'
-    else:
-        cmd = f'hadolint --ignore {" --ignore ".join(VERSION_PINNING_RULES)}  {dockerfile_path}'
+
+    cmd = f'hadolint --ignore {" --ignore ".join(rules_to_ignore)}  {dockerfile_path}'
+
+    print(cmd)
 
     result = subprocess.run(cmd,
                             shell = True,
@@ -46,13 +46,12 @@ def _run_hadolint(
     return output, result, dockerfile_path
 
 
-@pytest.mark.skip(reason="Takes too long")
-@pytest.mark.parametrize('config, params, enforce_version_pinning_warnings', _generate_test_data()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
-def test_config(config, params, enforce_version_pinning_warnings):
+@pytest.mark.parametrize('config, params, rules_to_ignore', _generate_test_data()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
+def test_config(config, params, rules_to_ignore):
 
     df_gen_output, df_gen_result, dockerfile_path = _generate_Dockerfile(config, params)
 
-    hadolint_output, result, ___ = _run_hadolint(dockerfile_path, enforce_version_pinning_warnings)
+    hadolint_output, result, ___ = _run_hadolint(dockerfile_path, rules_to_ignore)
 
     assert result.returncode == 0
     assert 'warning' not in hadolint_output.lower()

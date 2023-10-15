@@ -11,7 +11,7 @@
 
 {% for param in other_command.supported_parameters %}
 {% if param in params -%}
-{% do parameters.remove(param) -%}
+{% do params.remove(param) -%}
 {% endif -%}
 {% endfor -%}
 
@@ -86,8 +86,7 @@ into parameters.
 {% else -%}
 {{ command.string }}
 {% endif -%}
-{% endif -%}
-
+{% endif %}
 
 {% endif -%}
 {% endfor -%}
