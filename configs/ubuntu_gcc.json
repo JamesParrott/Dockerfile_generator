@@ -7,9 +7,6 @@
  "runner_binaries_dir" : "/",
 
  "build_stages" : {
-    "heirloom" : {"build_script" : "",
-                  "file_path" : "build_stage_templates/debian/heirloom/Dockerfile_heirloom_build_stage.jinja"
-                 }
  },
 
  "commands" : {
