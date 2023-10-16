@@ -49,7 +49,13 @@ def test_generating_and_building_Dockerfiles(config_path, params, __):
 
     config = str(config_path).replace("/","_").replace("\\","_").replace(".","_")
     params_str = params.replace(" ","_")
-    tag = f'dockerfile_generator_test_image_{config}_{params_str}'
+
+    # TODO: Ensure valid tag name
+    # The tag must be valid ASCII and can contain lowercase and uppercase letters, digits, underscores, periods, 
+    # and hyphens. It cannot start with a period or hyphen and must be no longer than 128 characters. 
+    # https://docs.docker.com/engine/reference/commandline/tag/
+
+    tag = f'dockerfile_generator_test_image_{config}_{params_str}'.replace('+','p')
 
     docker_output, result, __ = _build_image_from(
         dockerfile_path.parent,
