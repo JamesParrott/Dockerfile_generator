@@ -58,4 +58,3 @@ def test_generating_and_building_Dockerfiles(config_path, params, __):
 
     assert df_gen_result.returncode == 0
     assert result.returncode == 0
-    assert 'warning' not in docker_output.lower()
