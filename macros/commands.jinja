@@ -17,7 +17,6 @@
 
 {% endfor -%}
 
-
 {% for param in config.build_stages -%}
 {% if param in params -%}
 {% do params.remove(param) -%}

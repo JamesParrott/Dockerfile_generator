@@ -1,5 +1,5 @@
 {# Sub templates for Dockerfile commands have access to: 
-   params
+   parameters
    command
    macros/versioned_param_list.jinja
 -#}
@@ -7,6 +7,6 @@
 {# "The incantation" -#}
 RUN apt-get update -y && \
     apt-get install --no-install-recommends -y \
-    {{ param_list.render(params, command.supported_parameters) }} && \
+    {{ param_list.render(parameters, command.supported_parameters) }} && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
