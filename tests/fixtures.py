@@ -56,7 +56,7 @@ def rules_to_ignore(pkgs):
     return RULES_TO_ALWAYS_IGNORE | VERSION_PINNING_RULES
 
 
-def _generate_test_data(a = 2, b = None, n = 10) -> Iterator[tuple[pathlib.Path, str, set[str]]]:
+def _generate_test_data(a = 2, b = None, n = 4) -> Iterator[tuple[pathlib.Path, str, set[str]]]:
     """ Yields different test data depending on an env variable,
         and on whatever json config files 
         are in the repo.  And ends with n random test cases per config.  

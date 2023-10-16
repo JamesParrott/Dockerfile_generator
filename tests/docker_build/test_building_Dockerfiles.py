@@ -29,31 +29,33 @@ def _build_image_from(
     return output, result, dockerfile_path
 
 def _only_all_param_tests():
-    """ Assumes each config's test with all supported params 
+    """ Assumes each config_path's test with all supported params 
         is immediately after the one with none.
     """
     prev_params = None
-    for (config, params, rules) in _generate_test_data():
+    for (config_path, params, rules) in _generate_test_data():
         if prev_params == '':
-            if 'alpine' in config['base_image'] and ' rc' in params:
+            if 'alpine' in str(config_path.stem) and ' rc' in params:
                 params = params.replace(' rc','') 
-            yield config, params, rules
+            yield config_path, params, rules
         prev_params = params
 
-#@pytest.mark.parametrize('config, params, __', _only_all_param_tests()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
-def toast_generating_and_building_Dockerfiles(config, params, __):
+@pytest.mark.parametrize('config_path, params, __', _only_all_param_tests()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
+def test_generating_and_building_Dockerfiles(config_path, params, __):
 
-    print(f'{config=}, {params=}')
+    print(f'{config_path=}, {params=}')
 
-    df_gen_output, df_gen_result, dockerfile_path = _generate_Dockerfile(config, params)
+    df_gen_output, df_gen_result, dockerfile_path = _generate_Dockerfile(config_path, params)
 
-    config_str = str(config).replace("/","_").replace("\\","_").replace(".","_")
+    config = str(config_path).replace("/","_").replace("\\","_").replace(".","_")
     params_str = params.replace(" ","_")
+    tag = f'dockerfile_generator_test_image_{config}_{params_str}'
 
     docker_output, result, __ = _build_image_from(
-        dockerfile_path,
-        f'dockerfile_generator_test_image_{config_str}_{params_str}'
+        dockerfile_path.parent,
+        tag,
         )
 
     assert df_gen_result.returncode == 0
+    assert result.returncode == 0
     assert 'warning' not in docker_output.lower()
