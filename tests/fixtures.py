@@ -82,6 +82,8 @@ def _generate_test_data(a = 2, b = None, n = 10) -> Iterator[tuple[pathlib.Path,
                   for param in command.get('supported_parameters', []) 
                  ]
 
+        params.extend(config.get('build_stages', {}))
+
         if not params: 
             continue
 

@@ -45,6 +45,8 @@ def _run_hadolint(
     output = result.stdout.decode(encoding = 'utf8')
     return output, result, dockerfile_path
 
+
+
 @pytest.mark.parametrize('config, params, rules_to_ignore', _generate_test_data()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
 def test_config(config, params, rules_to_ignore):
 

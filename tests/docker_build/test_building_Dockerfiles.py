@@ -28,9 +28,20 @@ def _build_image_from(
     output = result.stdout.decode(encoding = 'utf8')
     return output, result, dockerfile_path
 
+def _only_all_param_tests():
+    """ Assumes each config's test with all supported params 
+        is immediately after the one with none.
+    """
+    prev_params = None
+    for (config, params, rules) in _generate_test_data():
+        if prev_params == '':
+            if 'alpine' in config['base_image'] and ' rc' in params:
+                params = params.replace(' rc','') 
+            yield config, params, rules
+        prev_params = params
 
-@pytest.mark.parametrize('config, params, __', _generate_test_data(n=0)) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
-def test_generating_and_building_Dockerfiles(config, params, __):
+#@pytest.mark.parametrize('config, params, __', _only_all_param_tests()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
+def toast_generating_and_building_Dockerfiles(config, params, __):
 
     print(f'{config=}, {params=}')
 
