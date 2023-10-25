@@ -1,0 +1,8 @@
+{# Sub templates for Dockerfile commands have access to: 
+   parameters
+   command
+   macros/versioned_param_list.jinja
+-#}
+{% import 'macros/versioned_param_list.jinja' as param_list -%}
+RUN apk add --no-cache \
+    {{ param_list.render(parameters, command.supported_parameters) }}

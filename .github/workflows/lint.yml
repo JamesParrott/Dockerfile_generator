@@ -1,0 +1,57 @@
+name: Lint output (run Hadolint on generated Dockerfiles).
+
+on:
+  workflow_dispatch:
+
+  # pull_request:
+
+  # push:
+  #   branches:
+  #     - main
+
+# This modifies the default permissions granted to `GITHUB_TOKEN`. 
+permissions:
+  contents: read
+  pull-requests: read
+
+# The `concurrency` key ensures that only a single workflow in the same concurrency group will run at the same time. For more information, see "[AUTOTITLE](/actions/using-jobs/using-concurrency)."
+# `concurrency.group` generates a concurrency group name from the workflow name and pull request information. The `||` operator is used to define fallback values.
+# `concurrency.cancel-in-progress` cancels any currently running job or workflow in the same concurrency group.
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+
+  lint_output:
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 60
+
+    strategy:
+
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-22.04, windows-2022,] # macos-12,]
+
+    steps:
+
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: 'false'
+
+
+      - name: Setup node
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip' # caching pip dependencies
+
+
+      - name: Install tox
+        run: pip install tox
+
+      - name: Run tests
+        run: tox run -e hadolint

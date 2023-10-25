@@ -1,14 +1,15 @@
+
+# Build stage based on Dave Kerr's Dockerfile: https://github.com/dwmkerr/docker-shells/
+
 FROM {{ builder_image }} as {{ builder_info.name }}
 
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends\
     make \
     gcc \
+    libc-dev \
     bzip2 \
     wget
-
-
-# Thanks to: https://github.com/dwmkerr/docker-shells/
 
 WORKDIR {{ working_dir }}
 

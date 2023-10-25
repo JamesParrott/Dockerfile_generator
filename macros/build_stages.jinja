@@ -1,37 +1,19 @@
 
 {% set builder = namespace(
-                    name = None,
-                    previous = None,
+                    name = none,
+                    previous = none,
                     previous_binaries_dir = '/tmp/bin',
                     ) -%}
 
 {% macro render_and_record_build_stage(
-    package_name,
-    build_stages,
-    builder_info= None,
-    builder_image = None,
-    binaries_dir = None,
+    package_name, 
+    config,
+    builder_info = none,
+    builder_image = none,
+    binaries_dir = none,
     working_dir = '/tmp'
     ) -%}
-{# package_name: str
-   build_stages: Dict[str, Dict[str, str]], e.g.:  {
-    "heirloom" : {"BUILD_SCRIPT" : "./source_builds/heirloom/build_heirloom.sh",
-                  "BUILD_DOCKERFILE_TEMPLATE" : ""
-                 },
-    "rc" :       {"BUILD_SCRIPT" : "./source_builds/rc/build_rc.sh",
-                  "BUILD_DOCKERFILE_TEMPLATE" : ""
-                 }
- },
-   
-   builder_info: namespace[name: str, previous: str, previous_binaries_dir: str]
-   
-   NOTE: To render Dockerfiles that build correctly, all calls to render_and_record_build_stage 
-   in the same template must be passed the same builder instance.  This ensures 
-   correct references to the previous build stage names and compiled artefacts' directories
-   between multiple build stages, and in the runner.
-   
-   builder_image: str
-   binaries_dir: str -#}
+
 {% if builder_info is none -%}
     {% set builder_info = builder -%}
 {% endif -%}
@@ -40,10 +22,10 @@
 
 {% set builder_info.name = package_name + '_builder' -%}
 
-{% set build_template = build_stages[package_name]["BUILD_DOCKERFILE_TEMPLATE"] -%}
+{% set build_template = config.build_stages[package_name]["file_path"] -%}
 
 {% if builder_image is none -%}
-    {% set builder_image = "${BASE_IMAGE}:${BASE_TAG}" -%}
+    {% set builder_image = "${base_image}:${base_tag}" -%}
 {% endif -%}
 
 {% if binaries_dir is none -%}
@@ -54,7 +36,7 @@
 {% include build_template -%}
 {% else -%}
 
-{% set build_script = build_stages[package_name]["BUILD_SCRIPT"] -%}
+{% set build_script = config.build_stages[package_name]["build_script"] -%}
 {% if build_script|length >= 1 -%}
 
 
@@ -66,9 +48,8 @@ WORKDIR {{ working_dir }}
 
 COPY {{ build_script }} .
 
-RUN chmod +x ./{{ script_file_name }}
-
-RUN ./{{ script_file_name }}
+RUN chmod +x ./{{ script_file_name }} && \
+    ./{{ script_file_name }}
 
 {% endif -%}
 {% endif -%}

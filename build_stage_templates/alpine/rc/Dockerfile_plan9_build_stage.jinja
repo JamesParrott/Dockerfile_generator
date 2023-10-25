@@ -1,0 +1,28 @@
+
+FROM {{ builder_image }} as {{ builder_info.name }}
+
+RUN apk add --no-cache \
+    gcc \
+    libc-dev \
+    linux-headers \
+    perl \ 
+    git
+
+ENV PLAN9=/usr/local/plan9
+
+WORKDIR ${PLAN9}
+
+# Warning, this step takes 14-15 mins to build on a standard laptop, 
+# and produces a 200MB Alpine Image.  
+# Alternatively, the rc shell is available on Apt-get, and 
+# an 82MB Debian Bullseye slim image with rc installed builds in 30 seconds. 
+# https://packages.debian.org/bullseye/shells/rc
+
+{# TODO: Need to get: ENV PATH=$PATH:${PLAN9}/bin into the runner stage -#}
+
+RUN git clone --depth=1 https://github.com/9fans/plan9port . && \
+    ./INSTALL && \
+    mkdir -p {{ binaries_dir }}/usr/local && \
+    mv ${PLAN9} {{ binaries_dir }}/usr/local
+
+{# RUN cp ${PLAN9} {{ binaries_dir }}/usr/local -#}

@@ -1,22 +1,17 @@
-{"BASE_IMAGE" : "ubuntu",
- "BASE_TAG" : "jammy",
- "NEED_SPECIAL_TAGS" : {},
+{"config" : 
+{"base_image" : "ubuntu",
+ "base_tag" : "jammy",
+ "need_special_tags" : {},
 
- "BUILDER_DEFAULT_BINARIES_DIR": "/tmp/runner_root_dir", 
- "RUNNER_BINARIES_DIR" : "/",
+ "builder_default_binaries_dir": "/tmp/runner_root_dir", 
+ "runner_binaries_dir" : "/",
 
- "BUILD_STAGES" : {
-    "heirloom" : {"BUILD_SCRIPT" : "",
-                  "BUILD_DOCKERFILE_TEMPLATE" : "source_builds/debian/heirloom/Dockerfile_heirloom_build_stage.jinja"
-                 },
-    "rc" :       {"BUILD_SCRIPT" : "./source_builds/debian/build_rc.sh",
-                  "BUILD_DOCKERFILE_TEMPLATE" : ""
-                 }
+ "build_stages" : {
  },
 
- "COMMANDS" : {
+ "commands" : {
       "install_from_default_repos" : {
-          "format_string" : "RUN apt-get update -y && \\\n    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends {parameters} && \\\n    apt-get clean && \\\n    rm -rf /var/lib/apt/lists/*", 
+          "file_path" : "/command_templates/apt-get.jinja",
           "supported_parameters" : [
                                  "gcc",
                                  "make",
@@ -25,14 +20,14 @@
                                  "libboost-dev",
                                  "ca-certificates",
                                  "git"
-                                ],
-          "prefix" : "\\\n    ",
-          "separator" : " \\\n    " }
+                                ]
+          }
      },
 
- "COMMANDS_ORDER" : ["install_from_default_repos",
-                     "BUILD_STAGES"
+ "commands_order" : ["install_from_default_repos",
+                     "build_stages"
                     ],
- "UNUSED_PARAMETERS_COMMAND" : "install_from_default_repos"
+ "unused_parameters_command" : "install_from_default_repos"
 
+}
 }
