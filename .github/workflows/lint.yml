@@ -35,9 +35,6 @@ jobs:
       matrix:
         os: [ubuntu-22.04] #, windows-2022,] # macos-12,]
 
-    env:
-      PATH: $PATH;$GITHUB_WORKSPACE
-
     steps:
 
       - name: Check out repo
@@ -59,4 +56,4 @@ jobs:
         run: pip install tox
 
       - name: Run tests
-        run: tox run -e hadolint
+        run: $PATH=$PATH;$GITHUB_WORKSPACE tox run -e hadolint
