@@ -33,7 +33,10 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-22.04, windows-2022,] # macos-12,]
+        os: [ubuntu-22.04] #, windows-2022,] # macos-12,]
+
+    env:
+      PATH: $PATH;$GITHUB_WORKSPACE
 
     steps:
 
