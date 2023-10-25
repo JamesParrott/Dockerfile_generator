@@ -10,12 +10,13 @@ A configuration can determine which parameters to do something with on the comma
 with unrecognised parameters).  The order of the commands can be adjusted, e.g. to manage the use of Docker's Cache.
 Parameters are most likely to be the names of packages to be installed
 with a package manager, but could be any arbitrary string, or none (the empty string), and Commands need not be 'RUN' Commands.
-Special commands that necessitate multi-stage Dockerfiles are also supported, by referring to a Jinja 2 sub-template or a build script
-(e.g. .sh file), for packages to be built from source.  No effort is made to validate the extra stages, e.g. to guarantee compilation
+Special commands that necessitate multi-stage Dockerfiles only when their param is provided, are also supported by referring to a Jinja 2 sub-template or a build script (e.g. .sh), for packages to be built from source.  No effort is made to validate extra custom stages. So e.g. to guarantee compilation
  - the user must tell Dockerfile generator exactly what to do, either in the sub-template or build script, and refer to it against a parameter in their configuration.
 The outputs from Dockerfile_generator with the included config files, are inteded to reflect the best practise in writing Dockerfiles
 and pass linting by Hadolint (with some rules relaxed, described below).  An image has been successfully built with Docker from each provided config file, for the Dockerfile generated from it when all supported parameters are provided.
 
+## Alternatives
+Dockerfiles for some official images are already generated using an [alternative templating system](https://github.com/docker-library/python/blob/master/Dockerfile-linux.template) to Jinja 2, which is rendered using Bash scripts and an [Awk script](https://github.com/docker-library/bashbrew/blob/master/scripts/jq-template.awk).  
 
 ## Installation
  - Install Python >= 3.7 from [python.org]
