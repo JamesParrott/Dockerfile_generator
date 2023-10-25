@@ -56,4 +56,4 @@ jobs:
         run: pip install tox
 
       - name: Run tests
-        run: PATH=$PATH:$GITHUB_WORKSPACE tox run -e hadolint
+        run: HADOLINT_EXECUTABLE=$GITHUB_WORKSPACE/hadolint.exe tox run -e hadolint-py311

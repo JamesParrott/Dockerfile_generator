@@ -1,3 +1,4 @@
+import os
 import subprocess
 import warnings
 import re
@@ -12,9 +13,11 @@ from ..test_jinja2_cli import (_generate_Dockerfile,
                                TMP_DOCKERFILE_PATH
                               )
 
+HADOLINT_EXECUTABLE = ENFORCE_ALL_VERSION_PINNING_WARNINGS = os.getenv('HADOLINT_EXECUTABLE', 'hadolint')
+
 HADOLINT_VERSION = '2.12.0'
 
-result = subprocess.run(['hadolint','--version'], capture_output=True)
+result = subprocess.run([HADOLINT_EXECUTABLE,'--version'], capture_output=True)
 
 output = result.stdout.decode()
 
@@ -38,7 +41,7 @@ def _run_hadolint(
     ):
 
 
-    cmd = f'hadolint --ignore {" --ignore ".join(rules_to_ignore)}  {dockerfile_path}'
+    cmd = f'{HADOLINT_EXECUTABLE} --ignore {" --ignore ".join(rules_to_ignore)}  {dockerfile_path}'
 
     print(cmd)
 
