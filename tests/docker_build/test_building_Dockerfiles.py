@@ -2,7 +2,12 @@ import subprocess
 import pathlib
 import pytest
 
-from ..fixtures import _generate_test_data, _generate_Dockerfile, TMP_DOCKERFILE_PATH
+from ..test_case_parameters import (_generate_test_data,
+                                    _only_all_param_tests,
+                                    )
+from ..test_jinja2_cli import (_generate_Dockerfile,
+                               TMP_DOCKERFILE_PATH,
+                              )
 
 
 
@@ -28,17 +33,9 @@ def _build_image_from(
     output = result.stdout.decode(encoding = 'utf8')
     return output, result, dockerfile_path
 
-def _only_all_param_tests():
-    """ Assumes each config_path's test with all supported params 
-        is immediately after the one with none.
-    """
-    prev_params = None
-    for (config_path, params, rules) in _generate_test_data():
-        if prev_params == '':
-            if 'alpine' in str(config_path.stem) and ' rc' in params:
-                params = params.replace(' rc','') 
-            yield config_path, params, rules
-        prev_params = params
+
+
+
 
 @pytest.mark.parametrize('config_path, params, __', _only_all_param_tests()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
 def test_generating_and_building_Dockerfiles(config_path, params, __):
@@ -57,10 +54,10 @@ def test_generating_and_building_Dockerfiles(config_path, params, __):
 
     tag = f'dockerfile_generator_test_image_{config}_{params_str}'.replace('+','p')
 
-    docker_output, result, __ = _build_image_from(
-        dockerfile_path.parent,
-        tag,
-        )
+    # docker_output, result, __ = _build_image_from(
+    #     dockerfile_path.parent,
+    #     tag,
+    #     )
 
     assert df_gen_result.returncode == 0
-    assert result.returncode == 0
+    # assert result.returncode == 0

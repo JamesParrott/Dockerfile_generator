@@ -1,16 +1,10 @@
 
 import os
-import subprocess
-import tempfile
 import pathlib
 import json
 import random
 from typing import Iterator
 
-TMP_DIR = pathlib.Path(tempfile.gettempdir()) 
-TMP_DOCKERFILE_DIR = TMP_DIR / 'Dockerfile_generator' / 'scratch'
-TMP_DOCKERFILE_DIR.mkdir(exist_ok=True, parents=True)
-TMP_DOCKERFILE_PATH = TMP_DOCKERFILE_DIR / 'Dockerfile'
 
 
 ENFORCE_ALL_VERSION_PINNING_WARNINGS = os.getenv('TEST_DOCKERFILE_GENERATOR_ENFORCE_ALL_VERSION_PINNING_WARNINGS', "False") == "True"
@@ -20,27 +14,6 @@ RULES_TO_ALWAYS_IGNORE = {'DL3059',}
 #                         Apt-get   Pip       Npm       Apk       Gem
 # E.g: https://github.com/hadolint/hadolint/wiki/DL3008
 
-
-def _generate_Dockerfile(
-    config: pathlib.Path | str ='configs/debian.json',
-    params='ash dash zsh heirloom fish elvish',
-    docker_file_path: pathlib.Path = TMP_DOCKERFILE_PATH,
-    ) -> tuple[str, subprocess.CompletedProcess, pathlib.Path]:
-    
-    cmd = f'jinja2 Dockerfile.jinja {str(config)} --format=json -D params="{params}" > {docker_file_path}'
-        
-
-    print(cmd)
-
-    result = subprocess.run(
-        cmd,
-        shell = True,
-        stderr = subprocess.STDOUT,
-        stdout = subprocess.PIPE,
-        )
-    output = result.stdout.decode(encoding = 'utf8')
-
-    return output, result, docker_file_path, 
 
 
 
@@ -75,6 +48,7 @@ def _generate_test_data(a = 2, b = None, n = 4) -> Iterator[tuple[pathlib.Path, 
         if config is None:
             continue
 
+        # Test generating Dockerfile with no params
         yield path, '', RULES_TO_ALWAYS_IGNORE
 
         params = [param
@@ -87,9 +61,11 @@ def _generate_test_data(a = 2, b = None, n = 4) -> Iterator[tuple[pathlib.Path, 
         if not params: 
             continue
 
+        # Test generating Dockerfile with all the params
         yield path, ' '.join(params), rules_to_ignore(params)
 
 
+        # Test generating Dockerfile with each param on its own
         for param in params:
             yield path, param, rules_to_ignore([param])
 
@@ -97,6 +73,7 @@ def _generate_test_data(a = 2, b = None, n = 4) -> Iterator[tuple[pathlib.Path, 
         max_sample_size = len(params) - 1 if b is None else b
 
 
+        # Test generating Dockerfile with n random selections of between a and b params
         for _ in range(n):
             try:
                 k = random.randint(a, max_sample_size)
@@ -105,3 +82,20 @@ def _generate_test_data(a = 2, b = None, n = 4) -> Iterator[tuple[pathlib.Path, 
                 print(f'{a=}, {max_sample_size=}, {k=}, {path=}, {b=}')
                 raise e
             yield path, sample, rules_to_ignore(sample)
+
+
+def _only_all_param_tests(except_params = [('rc', ('alpine')),]):
+    """ Assumes each config_path's test with all supported params 
+        is immediately after the one with none.
+    """
+    prev_params = None
+    for config_path, params, rules in _generate_test_data():
+        if prev_params == '':
+            for param, distros in except_params:
+                for distro in distros:
+                    first_str = f'{param} '
+                    param_str = first_str if params.startswith(first_str) else f' {param}'
+                    if distro in str(config_path.stem) and param_str in params:
+                        params = params.replace(param_str,'') 
+            yield config_path, params, rules
+        prev_params = params

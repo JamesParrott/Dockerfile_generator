@@ -78,6 +78,13 @@ A small Python wrapper (that does what we use Jinja2-cli for, without a cli) mor
 
 ## Testing
 
+### Linting tests
+`tox` to test using hadolint
+
+### Dockerfile build tests
+- start the docker daemon, e.g. by opening Docker Desktop.
+`tox` to build test dockerfiles tox -e docker_build-py311
+
 ### Relaxation of Hadolint's version pinning rules.
 
 Dockerfile_generator was written to allow parametric testing, and to programmatically vary properties of test environments defined by Dockerfiles.  Other applications of Dockerfiles prioritise reproducible builds, and recommend pinning versions of apps installed in Containers (and base Dockerfile image versions). 

@@ -4,8 +4,13 @@ import re
 
 import pytest
 
-from ..fixtures import _generate_test_data, _generate_Dockerfile, VERSION_PINNING_RULES, RULES_TO_ALWAYS_IGNORE, TMP_DOCKERFILE_PATH
-
+from ..test_case_parameters import (_generate_test_data,
+                        VERSION_PINNING_RULES,
+                        RULES_TO_ALWAYS_IGNORE
+                       )
+from ..test_jinja2_cli import (_generate_Dockerfile,
+                               TMP_DOCKERFILE_PATH
+                              )
 
 HADOLINT_VERSION = '2.12.0'
 
