@@ -51,8 +51,9 @@ jobs:
 
       - name: Install hadolint
         # run:  curl --location --remote-header-name --remote-name https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Windows-x86_64.exe > hadolint.exe
-        run:  curl --location --remote-header-name --remote-name https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 > hadolint
-        run: chmod +x hadolint
+        run:  |
+          curl --location --remote-header-name --remote-name https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 > hadolint
+          chmod +x hadolint
 
       - name: Install tox
         run: pip install tox
