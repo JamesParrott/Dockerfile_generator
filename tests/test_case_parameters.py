@@ -84,7 +84,8 @@ def _generate_test_data(a = 2, b = None, n = 4) -> Iterator[tuple[pathlib.Path, 
             yield path, sample, rules_to_ignore(sample)
 
 
-def _only_all_param_tests(except_params = [('rc', ('alpine')),]):
+def _only_all_param_tests(except_params = [('rc', ('alpine')),]):  # rc does compile on alpine.  This subtemplate just 
+                                                                   # compiles Plan9 too, which takes almost an hour
     """ Assumes each config_path's test with all supported params 
         is immediately after the one with none.
     """
