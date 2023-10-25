@@ -1,5 +1,22 @@
 # Dockerfile generator
 
+Containerisation is incredibly powerful, and it is worth any programmer's time to learn how to use it, and understand the basics of Dockerfiles.    
+To ease the barrier of entry, and to let people get up and running quickly, especially those who just want an image for
+ particular distro with their choice of apps installed, Dockerfile generator can help.
+Dockerfile generator provides a set of nested Jinja 2 templates, that are configurable (e.g. by JSON files), that match a 
+required data structure, that describe the possible contents of the Dockerfile.  The config files are reusable, and can refer to Jinja 2 sub-templates, e.g. that describe the best practise use of a particular package manager
+The raison d'etre is to allow multiple Dockerfiles to be generated from the same configuration, for parametric testing.
+A configuration can determine which parameters to do something with on the command line (and which default command to use 
+with unrecognised parameters).  The order of the commands can be adjusted, e.g. to manage the use of Docker's Cache.
+Parameters are most likely to be the names of packages to be installed
+with a package manager, but could be any arbitrary string, or none (the empty string), and Commands need not be 'RUN' Commands.
+Special commands that necessitate multi-stage Dockerfiles are also supported, by referring to a Jinja 2 sub-template or a build script
+(e.g. .sh file), for packages to be built from source.  No effort is made to validate the extra stages, e.g. to guarantee compilation
+ - the user must tell Dockerfile generator exactly what to do, either in the sub-template or build script, and refer to it against a parameter in their configuration.
+The outputs from Dockerfile_generator with the included config files, are inteded to reflect the best practise in writing Dockerfiles
+and pass linting by Hadolint (with some rules relaxed, described below).  An image has been successfully built with Docker from each provided config file, for the Dockerfile generated from it when all supported parameters are provided.
+
+
 ## Installation
  - Install Python >= 3.7 from [python.org]
  - Clone the repo where you want to install it `git clone --depth=1 --branch main https://github.com/JamesParrott/Dockerfile_generator`
@@ -66,15 +83,16 @@
 }
 
 ## Development
-This Branch is for posterity, the historical record, and published as a warning to others...
+This Branch is for posterity, and as a warning to others...
 
-After working on this project again after a gap of a couple of months break, I now fully appreciate the wisdom of not implementing business logic in a templating language...  
+Following a couple of months break from it, and after having worked on this project again, I now fully appreciate the wisdom of not implementing business logic in a templating language.  However this does bring some advantages.
 
-This branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written does!
+Other than the tests, the working code in this branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written!
 
-By keeping this project pure Jinja 2, advanced users and devs alike that are willing to learn the basics of Jinja 2, are able to access vastly more flexibility in how they use it, by the native mechanisms of Jinja 2 alone.  Namely: import, template inheritance, overrides, and includes, of any of the sub templates (.jinja files).   
+By keeping this project pure Jinja 2, advanced users and devs alike (that are willing to learn the basics of Jinja 2), are able to access vastly more flexibility in how they use it, or part of it, by the native mechanisms of Jinja 2 alone.  Namely: imports, template inheritance, overrides, and includes, of any of the sub templates (.jinja files).   
 
-A small Python wrapper (that does what we use Jinja2-cli for, without a cli) more suitable for development of extra features (e.g. sending requests to package manager APIs) or defining the Dockerfile generation logic entirely,
+A small Python wrapper (that does what Jinja2-cli is used for, without a cli) would be more suitable for development of extra features (e.g. sending requests to package manager APIs) or defining the Dockerfile generation logic entirely.  This will be implemented on the
+main branch.
 
 ## Testing
 
@@ -83,16 +101,17 @@ A small Python wrapper (that does what we use Jinja2-cli for, without a cli) mor
 
 ### Dockerfile build tests
 - start the docker daemon, e.g. by opening Docker Desktop.
-`tox` to build test dockerfiles tox -e docker_build-py311
+`tox -e docker_build-py311` to build test dockerfiles (can ~20 minutes or longer)
 
 ### Relaxation of Hadolint's version pinning rules.
 
 Dockerfile_generator was written to allow parametric testing, and to programmatically vary properties of test environments defined by Dockerfiles.  Other applications of Dockerfiles prioritise reproducible builds, and recommend pinning versions of apps installed in Containers (and base Dockerfile image versions). 
 
-Parametric integration or acceptance testing enables a project to determine which third party params (shells) it is possible to support.  In this context, one of the goals of testing is to discover if unpinned external dependencies break the project.  Users will experience exactly the same breakage.  
+Parametric integration or acceptance testing enables a project to determine which third party params (e.g. shells) it is possible to support.  In this context, one of the goals of testing is precisely to discover if an unpinned external dependency breaks the project.  Users will experience exactly the same breakage.  
 
 This was the reason for which Dockerfile_generator was written, therefore the default configs do not specify pinned versions in the provided example apps.  There is an exclusion in the testing - it is assumed the user does not want version pinning.  
 
-If you require version pinning (for reproducibility, better cacheing etc.) Dockerfile_generator does support this.  Instead of picking one set of versions (for all the shells in the example configs) and forcing everyone to use them, the specific version numbers to be pinned at (or other constraints) chosen by each user, must be added to the config file they use, by including these constraints in the strings in supported_parameters, or setting it to be a mapping of aliases to the actual strings to be rendered.  
+If you require version pinning (for reproducibility, better cacheing etc.) Dockerfile_generator does support this.  Instead of picking one set of versions (for all the shells in the example configs) and forcing everyone to use them, the specific version numbers to be pinned at (or other constraints) must be chosen by each user, and added to their config file.  Version constraints can either be
+included directly in the param identifier strings in supported_parameters, or more conveniently by setting supported_parameters to be a mapping of command line aliases to the actual strings to be rendered.  
 
-Reproducible builds, containing external dependencies, may still break e.g. if a repository being relied on drops or an author yanks the pinned version of a package (so perhaps building from source and/or self-hosting is also required). 
+Reproducible builds, containing external dependencies, may still break e.g. if a repository being relied on drops, or an author yanks the pinned version of a package (so for true reproducibility,  self-hosting and perhaps also building from source is also required). 
