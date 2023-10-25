@@ -13,7 +13,7 @@ from ..test_jinja2_cli import (_generate_Dockerfile,
                                TMP_DOCKERFILE_PATH
                               )
 
-HADOLINT_EXECUTABLE = ENFORCE_ALL_VERSION_PINNING_WARNINGS = os.getenv('HADOLINT_EXECUTABLE', 'hadolint')
+HADOLINT_EXECUTABLE = os.getenv('HADOLINT_EXECUTABLE', 'hadolint')
 
 HADOLINT_VERSION = '2.12.0'
 
