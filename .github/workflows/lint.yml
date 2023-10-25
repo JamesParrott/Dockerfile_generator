@@ -54,6 +54,8 @@ jobs:
         with: # Grab the latest version
           repo: hadolint/hadolint
           tag: 'v2.12.0'
+          platform: 'linux'
+          arch: 'x86_64'
 
       # - name: Install hadolint
       #   # curl --location --remote-header-name --remote-name https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 > hadolint
