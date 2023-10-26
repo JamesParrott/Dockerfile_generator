@@ -74,7 +74,7 @@ def rules_to_ignore(pkgs, config):
     return RULES_TO_ALWAYS_IGNORE | VERSION_PINNING_RULES
 
 
-def _all_configs_paths_and_params() -> Iterator[dict, tuple[pathlib.Path, list[str]]]:
+def _all_configs_paths_and_params() -> Iterator[tuple[dict, pathlib.Path, list[str]]]:
 
     for path in pathlib.Path('.').glob('**/*.json'):
 
