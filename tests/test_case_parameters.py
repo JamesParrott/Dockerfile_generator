@@ -103,7 +103,7 @@ def _generate_test_data(a = 2, b = None, n = 4) -> Iterator[tuple[pathlib.Path, 
         configs to pass hadolint's version pinning rules.
     """
 
-    for config, path, params in _all_config_paths_and_params():
+    for config, path, params in _all_configs_paths_and_params():
 
 
         # Test generating Dockerfile with no params
@@ -140,7 +140,7 @@ def _only_all_param_tests(except_params = [('rc', ('alpine')),])  -> Iterator[tu
                                             # currently used compiles all of Plan9, which 
                                             # takes almost an hour
 
-    for config, path, params in _all_config_paths_and_params():
+    for config, path, params in _all_configs_paths_and_params():
         for param_to_remove, distros in except_params:
             if param_to_remove in params and any(distro in str(path) 
                                                  for distro in distros
