@@ -54,10 +54,10 @@ def test_generating_and_building_Dockerfiles(config_path, params, __):
 
     tag = f'dockerfile_generator_test_image_{config}_{params_str}'.replace('+','p')
 
-    # docker_output, result, __ = _build_image_from(
-    #     dockerfile_path.parent,
-    #     tag,
-    #     )
+    docker_output, result, __ = _build_image_from(
+        dockerfile_path.parent,
+        tag,
+        )
 
     assert df_gen_result.returncode == 0
-    # assert result.returncode == 0
+    assert result.returncode == 0

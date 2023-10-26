@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-22.04, windows-2022,] # macos-12,]
+        os: [ubuntu-22.04, windows-2022] # , macos-12,]
 
     steps:
 
@@ -43,15 +43,26 @@ jobs:
           persist-credentials: 'false'
 
 
-      - name: Setup node
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
           cache: 'pip' # caching pip dependencies
 
+      - name: Install Hadolint
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        with: 
+          repo: hadolint/hadolint
+          tag: 'v2.12.0'
+          platform: 'linux'
+          arch: 'x86_64'
+          extension-matching: disable
+          rename-to: hadolint
+          chmod: 0755
 
       - name: Install tox
         run: pip install tox
 
+
       - name: Run tests
-        run: tox run -e hadolint
+        run: tox run -e hadolint-py311

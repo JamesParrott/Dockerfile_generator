@@ -1,8 +1,7 @@
 # Dockerfile generator
 
-Containerisation is incredibly powerful, and it is worth any programmer's time to learn how to use it, and understand the basics of Dockerfiles.    
-To ease the barrier of entry, and to let people get up and running quickly, especially those who just want an image for
- particular distro with their choice of apps installed, Dockerfile generator can help.
+Containerisation is incredibly powerful, and it is worth any programmer's time to learn how to use it, and understand the basics of Dockerfiles.  Dockerfile generator can ease the barrier of entry, and let people get up and running quickly, especially those who just want an image for particular distro with their choice of apps installed.
+
 Dockerfile generator provides a set of nested Jinja 2 templates, that are configurable (e.g. by JSON files), that match a 
 required data structure, that describe the possible contents of the Dockerfile.  The config files are reusable, and can refer to Jinja 2 sub-templates, e.g. that describe the best practise use of a particular package manager
 The raison d'etre is to allow multiple Dockerfiles to be generated from the same configuration, for parametric testing.
@@ -10,38 +9,39 @@ A configuration can determine which parameters to do something with on the comma
 with unrecognised parameters).  The order of the commands can be adjusted, e.g. to manage the use of Docker's Cache.
 Parameters are most likely to be the names of packages to be installed
 with a package manager, but could be any arbitrary string, or none (the empty string), and Commands need not be 'RUN' Commands.
-Special commands that necessitate multi-stage Dockerfiles are also supported, by referring to a Jinja 2 sub-template or a build script
-(e.g. .sh file), for packages to be built from source.  No effort is made to validate the extra stages, e.g. to guarantee compilation
+Special commands that necessitate multi-stage Dockerfiles only when their param is provided, are also supported by referring to a Jinja 2 sub-template or a build script (e.g. .sh), for packages to be built from source.  No effort is made to validate extra custom stages. So e.g. to guarantee compilation
  - the user must tell Dockerfile generator exactly what to do, either in the sub-template or build script, and refer to it against a parameter in their configuration.
 The outputs from Dockerfile_generator with the included config files, are inteded to reflect the best practise in writing Dockerfiles
 and pass linting by Hadolint (with some rules relaxed, described below).  An image has been successfully built with Docker from each provided config file, for the Dockerfile generated from it when all supported parameters are provided.
 
+## Alternatives
+Dockerfiles for some official images are already generated using an [alternative templating system](https://github.com/docker-library/python/blob/master/Dockerfile-linux.template) to Jinja 2, which is rendered using Bash scripts and an [Awk script](https://github.com/docker-library/bashbrew/blob/master/scripts/jq-template.awk).  
 
 ## Installation
- - Install Python >= 3.7 from [python.org]
- - Clone the repo where you want to install it `git clone --depth=1 --branch main https://github.com/JamesParrott/Dockerfile_generator`
+ - Install the latest Python version from [python.org] (version 3.7 or later is supported).
  - Make a venv and activate it.
- - `pip install jinja2-cli`
+ - `pip install dockerfile-generator` (currently this just installs the dependencies)
+ - Clone the repo where you want the templates and config files: `git clone --depth=1 --branch main https://github.com/JamesParrott/Dockerfile_generator`.  
+ - `cd Dockerfile_generator`
 
 ## Usage
 `jinja2 Dockerfile.jinja configs/debian.json --format=json -D params="ash dash zsh heirloom fish elvish" > Dockerfile`
 
 ## Features
- - Multi-stage builds if needed.  The only requirement for them to work nicely together and for Dockerfile_generator to generate  correct base image and `COPY from= ` command are: 
+ - Multi-stage builds if needed.  The only requirements for them to work nicely together and for Dockerfile_generator to generate  a correct base image tag and `COPY from= ` command are: 
    - The build stage is based on the same base image as the final
      runner stage
    - build stage stub templates must copy their build artifacts to a copy of the target directory in the runner root, as a sub directory of `{{ binaries_dir }}`.
    - User must supply compilation instructions.
  - Special tags are automatically applied, e.g. for extra repos, if any params are to be installed that require Alpine Edge. 
- - Dockerfiles produces have been designed to follow [Docker's recommendations](https://docs.docker.com/develop/develop-images/guidelines/), and have been tested by linting with `hadolint` and building some in CI.
+ - Dockerfiles produced follow [Docker's recommendations](https://docs.docker.com/develop/develop-images/guidelines/), and have been tested by linting with `hadolint` and building some in CI.
  - Version pinning support (not in the default config images - but see `/tests/pinned_versions/alpine_pinned.json` for an example).  See testing notes.
  - Labels.
  - User config files can support arbitrary docker commands by referring to sub templates.  Parameters are not limited to params to be installed.
  - Config files are supplied for Alpine, Debian and Ubuntu images with apk and apt-get.  You no longer have to remember the
  apt-get "incantation.
    - Base image and Base tag args for maintainability.
-   - Commands ordered from most common to least common, to make
-     best use of Docker's build cache.
+   - Commands ordered from most common to least common, to make best use of Docker's build cache.
 
 
 ## Config files
