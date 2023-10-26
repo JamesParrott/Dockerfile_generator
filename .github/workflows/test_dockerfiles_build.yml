@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
 
-  lint_output:
+  build_outputted_Dockerfiles:
     runs-on: ${{ matrix.os }}
 
     timeout-minutes: 90
