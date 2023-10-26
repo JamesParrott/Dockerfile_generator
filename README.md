@@ -20,7 +20,7 @@ Dockerfiles for some official images are already generated using an [alternative
 ## Installation
  - Install the latest Python version from [python.org] (version 3.7 or later is supported).
  - Make a venv and activate it.
- - `pip install dockerfile-generator` (currently this just installs the dependencies)
+ - `pip install jinja2-cli` 
  - Clone the repo where you want the templates and config files: `git clone --depth=1 --branch main https://github.com/JamesParrott/Dockerfile_generator`.  
  - `cd Dockerfile_generator`
 
