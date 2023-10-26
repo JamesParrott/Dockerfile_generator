@@ -59,18 +59,10 @@ jobs:
           extension-matching: disable
           rename-to: hadolint
           chmod: 0755
-      # - name: Install hadolint
-      #   # curl --location --remote-header-name --remote-name https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 > hadolint
- 
-      #   run: curl --location --remote-header-name --remote-name https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Windows-x86_64.exe > $GITHUB_WORKSPACE\hadolint.exe
-      #   # run:  |         chmod +x hadolint
 
       - name: Install tox
         run: pip install tox
 
-      # - name: Run tests
-      #   # run: HADOLINT_EXECUTABLE=$GITHUB_WORKSPACE/hadolint.exe tox run -e hadolint-py311
-      #   run: HADOLINT_EXECUTABLE=$GITHUB_WORKSPACE\hadolint.exe tox run -e hadolint-py311
 
       - name: Run tests
         run: tox run -e hadolint-py311
