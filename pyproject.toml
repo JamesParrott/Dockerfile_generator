@@ -13,7 +13,12 @@ description = "Jinja 2 templates (with example config files) to generate Dockerf
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
 ]
 
@@ -26,6 +31,6 @@ optional-dependencies.testing = [
 ]
 
 
-[project.urls]   # Private repo.
+[project.urls]   
 "Homepage" = "https://github.com/JamesParrott/Dockerfile_generator"
 "Bug Tracker" = "https://github.com/JamesParrott/Dockerfile_generator/issues"

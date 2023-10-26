@@ -19,10 +19,9 @@ and pass linting by Hadolint (with some rules relaxed, described below).  An ima
 Dockerfiles for some official images are already generated using an [alternative templating system](https://github.com/docker-library/python/blob/master/Dockerfile-linux.template) to Jinja 2, which is rendered using Bash scripts and an [Awk script](https://github.com/docker-library/bashbrew/blob/master/scripts/jq-template.awk).  
 
 ## Installation
- - Install Python >= 3.7 from [python.org]
- - Clone the repo where you want to install it `git clone --depth=1 --branch main https://github.com/JamesParrott/Dockerfile_generator`
+ - Install the latest Python version from [python.org] (version 3.7 or later is supported).
  - Make a venv and activate it.
- - `pip install jinja2-cli`
+ - `pip install dockerfile-generator`
 
 ## Usage
 `jinja2 Dockerfile.jinja configs/debian.json --format=json -D params="ash dash zsh heirloom fish elvish" > Dockerfile`
