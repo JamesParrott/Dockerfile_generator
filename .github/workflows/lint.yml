@@ -51,12 +51,14 @@ jobs:
 
       - name: Install Hadolint
         uses: jaxxstorm/action-install-gh-release@v1.10.0
-        with: # Grab the latest version
+        with: 
           repo: hadolint/hadolint
           tag: 'v2.12.0'
           platform: 'linux'
           arch: 'x86_64'
-
+          extension-matching: disable
+          rename-to: hadolint
+          chmod: 0755
       # - name: Install hadolint
       #   # curl --location --remote-header-name --remote-name https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 > hadolint
  
