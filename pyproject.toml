@@ -30,6 +30,8 @@ optional-dependencies.testing = [
   "pytest>=7.4",
 ]
 
+[project.scripts]
+dockerfile_generator = "dockerfile_generator:main" 
 
 [project.urls]   
 "Homepage" = "https://github.com/JamesParrott/Dockerfile_generator"
