@@ -71,13 +71,14 @@ def rendered_Dockerfile(
             f'Supported extensions: {", ".join(CONFIG_IMPORTERS)} (case insensitive)'
             ) 
 
-    importer = CONFIG_IMPORTERS[ext]
+    importer = CONFIG_IMPORTERS[ext]()
 
     with path.open('rt', encoding=encoding) as f:
-        config_dict = importer(f)
+        config_dict = importer(f)['config']
 
     env = jinja2.Environment(
-        loader = jinja2.FileSystemLoader(TEMPLATE.parent)
+        loader = jinja2.FileSystemLoader(TEMPLATE.parent),
+        extensions = ['jinja2.ext.do', 'jinja2.ext.loopcontrols'],
         )
 
     template = env.get_template(TEMPLATE.name)

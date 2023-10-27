@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dockerfile_generator"
-version = "0.0.0"
+version = "1.0.0"
 license = {file = "LICENSE"}
 authors = [
   { name="James Parrott", email="james.parrott@proton.me" },
@@ -31,12 +31,12 @@ optional-dependencies.testing = [
 ]
 
 [project.scripts]
-dockerfile_generator = "dockerfile_generator.__main__:main" 
+dockerfile_generator = "dockerfile_generator.main:main" 
 
 [project.urls]   
 "Homepage" = "https://github.com/JamesParrott/Dockerfile_generator"
 "Bug Tracker" = "https://github.com/JamesParrott/Dockerfile_generator/issues"
 
 [tool.hatch.build.targets.wheel.force-include]
-".\\templates" = "templates"
-".\\configs" = "configs"
+"templates" = "dockerfile_generator/templates"
+"configs" = "dockerfile_generator/configs"
