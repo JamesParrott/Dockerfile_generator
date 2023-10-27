@@ -1,11 +1,11 @@
 {% macro version_if_any_for_x_from(
             x,
-            command
+            supported_parameters
             ) -%}
-{% if command.supported_parameters is mapping() -%}
-{% set val=container.get(x) -%}
+{% if supported_parameters is mapping() -%}
+{% set val=supported_parameters.get(x) -%}
 {% if val is string() -%}
-{{ x -}}{{ val -}}
+{{ val -}}
 {% else -%}
 {# TODO:  Full Python or Pyodide app that calls the 
           API for Apt-get or apk to check versions,
