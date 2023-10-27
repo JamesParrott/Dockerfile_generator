@@ -2,19 +2,20 @@ import sys
 import argparse
 import pathlib
 import types
+from typing import Iterable
 
 import jinja2
 
 
-CONFIGS_DIR = pathlib.Path(__file__).parent.parent / 'configs'
-TEMPLATE_DIR = pathlib.Path(__file__).parent.parent / 'templates' / 'Dockerfile.jinja'
+CONFIGS_DIR = pathlib.Path(__file__).parent / 'configs'
+TEMPLATE = pathlib.Path(__file__).parent / 'templates' / 'Dockerfile.jinja'
 
 # Make a read only 'dictionary'
 BUILT_IN_CONFIGS = types.MappingProxyType(
                       {'alpine' : 'alpine.json',
-                      'debian' : 'debian.json',
-                      'ubuntu' : 'ubuntu.json',
-                      'ubuntu_gcc' : 'ubuntu_gcc.json',
+                       'debian' : 'debian.json',
+                       'ubuntu' : 'ubuntu.json',
+                       'ubuntu_gcc' : 'ubuntu_gcc.json',
                       }
                      )
 
@@ -51,17 +52,17 @@ def rendered_Dockerfile(
     else:
         path = pathlib.Path(config)
 
-    error_msg = ''
+        error_msg = ''
 
-    if not path.exists():
-        error_msg = f'No file found: {config=}. '
+        if not path.exists():
+            error_msg = f'No file found: {config=}. '
 
-    if not path.isfile():
-        error_msg = f'{config=} is a directory. ' 
-    
-    if error_msg:
-        error_msg = f'{error_msg} config must be a file or in {", ".join(BUILT_IN_CONFIGS)} '
-        raise FileNotFoundError(error_msg)
+        if not path.is_file():
+            error_msg = f'{config=} is a directory. ' 
+        
+        if error_msg:
+            error_msg = f'{error_msg} config must be a file or in {", ".join(BUILT_IN_CONFIGS)} '
+            raise FileNotFoundError(error_msg)
 
     ext = path.suffix
     if ext.lower() not in CONFIG_IMPORTERS:
@@ -84,7 +85,7 @@ def rendered_Dockerfile(
     return template.render(config = config_dict, params = ws_separated_params)
 
 
-def main(args = sys.argv):
+def main(args = sys.argv[1:]):
     
     parser = argparse.ArgumentParser(description=('Parse the config defining '
                                                   'the Dockerfile type, and '
@@ -94,11 +95,10 @@ def main(args = sys.argv):
     
     parser.add_argument(
         'config',
-        required = True,
         help = ('The configuration for the general type of Dockerfile chosen, '
                 'e.g. for an Alpine Linux image, or a Ubuntu image with gcc '
                 'must be the path of a config file, or one of the key words '
-                f'for a built in config: {", ".join(SUPPORTED_KEYWORDS)} '
+                f'for a built in config: {", ".join(BUILT_IN_CONFIGS)} '
                ),
         type=str,
         default = 'alpine'
@@ -122,4 +122,4 @@ def main(args = sys.argv):
 
 
 if __name__ == '__main__':
-    exit(main(sys.args))
+    sys.exit(main())

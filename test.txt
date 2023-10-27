@@ -1,0 +1,3 @@
+# activate venv
+pip install hatch
+del /Q dist\* && py -m build -n --wheel && pip install .\dist\dockerfile_generator-0.0.0-py3-none-any.whl && dockerfile_generator alpine
