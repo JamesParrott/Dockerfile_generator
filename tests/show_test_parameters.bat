@@ -1,0 +1,1 @@
+py -c "import sys; sys.path.append('tests'); import test_case_parameters as tcp;[print(p) for p in tcp._generate_test_data(n=0) if len(p[2])==1]"

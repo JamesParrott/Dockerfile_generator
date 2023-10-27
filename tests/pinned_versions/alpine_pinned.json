@@ -7,9 +7,6 @@
  "runner_binaries_dir" : "/",
 
  "build_stages" : {
-    "rc" :       {"build_script" : "",
-                  "file_path" : "./build_stage_templates/alpine/rc/Dockerfile_plan9_build_stage.jinja"
-                 }
  },
 
  "commands" : {
