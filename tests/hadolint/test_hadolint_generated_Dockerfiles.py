@@ -6,9 +6,9 @@ import re
 import pytest
 
 from ..test_case_parameters import (_generate_test_data,
-                        VERSION_PINNING_RULES,
-                        RULES_TO_ALWAYS_IGNORE
-                       )
+                                    VERSION_PINNING_RULES,
+                                    RULES_TO_ALWAYS_IGNORE
+                                   )
 from ..test_cli import (_generate_Dockerfile,
                         TMP_DOCKERFILE_PATH
                         )

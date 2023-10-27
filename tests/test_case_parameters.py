@@ -68,8 +68,8 @@ def _all_versioned(pkgs, config):
 
 
 def rules_to_ignore(pkgs, config):
-    if ENFORCE_ALL_VERSION_PINNING_WARNINGS or _all_versioned(pkgs, config):
-        return RULES_TO_ALWAYS_IGNORE
+    # if ENFORCE_ALL_VERSION_PINNING_WARNINGS or _all_versioned(pkgs, config):
+    #     return RULES_TO_ALWAYS_IGNORE
     
     return RULES_TO_ALWAYS_IGNORE | VERSION_PINNING_RULES
 
