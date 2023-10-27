@@ -9,9 +9,9 @@ from ..test_case_parameters import (_generate_test_data,
                         VERSION_PINNING_RULES,
                         RULES_TO_ALWAYS_IGNORE
                        )
-from ..test_jinja2_cli import (_generate_Dockerfile,
-                               TMP_DOCKERFILE_PATH
-                              )
+from ..test_cli import (_generate_Dockerfile,
+                        TMP_DOCKERFILE_PATH
+                        )
 
 HADOLINT_EXECUTABLE = os.getenv('HADOLINT_EXECUTABLE', 'hadolint')
 

@@ -17,7 +17,8 @@ def _generate_Dockerfile(
     docker_file_path: pathlib.Path = TMP_DOCKERFILE_PATH,
     ) -> tuple[str, subprocess.CompletedProcess, pathlib.Path]:
     
-    cmd = f'jinja2 Dockerfile.jinja {str(config)} --format=json -D params="{params}" > {docker_file_path}'
+    # cmd = f'jinja2 Dockerfile.jinja {str(config)} --format=json -D params="{params}" > {docker_file_path}'
+    cmd = f'dockerfile_generator {str(config)} {params} > {docker_file_path}'
         
 
     print(cmd)

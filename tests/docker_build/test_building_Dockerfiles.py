@@ -5,9 +5,9 @@ import pytest
 from ..test_case_parameters import (_generate_test_data,
                                     _only_all_param_tests,
                                     )
-from ..test_jinja2_cli import (_generate_Dockerfile,
-                               TMP_DOCKERFILE_PATH,
-                              )
+from ..test_cli import (_generate_Dockerfile,
+                        TMP_DOCKERFILE_PATH,
+                        )
 
 
 
