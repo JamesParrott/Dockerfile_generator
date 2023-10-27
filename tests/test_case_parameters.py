@@ -61,7 +61,7 @@ def _all_versioned(pkgs, config):
 
     _rendered_names_gen = _rendered_names_generator_factory(config)
     
-    return all(not _contains_constraint(name)
+    return all(_contains_constraint(name)
                for name in _rendered_names_gen(pkgs)
               )   
 
