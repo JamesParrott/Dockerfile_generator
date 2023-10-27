@@ -1,7 +1,11 @@
-# Dockerfile generator
+# Dockerfile_generator
 
 ## Installation
  - Install the latest Python version from [python.org] (version 3.7 or later is supported).
+Either:
+ - Install pipx, e.g. `pip install pipx`
+ - `pipx install dockerfile_generator`
+Or
  - Make a venv and activate it.
  - `pip install dockerfile_generator` 
 
@@ -25,16 +29,16 @@
    - Commands ordered from most common to least common, to make best use of Docker's build cache.
 
 ## Description
-Containerisation is incredibly powerful, and it is worth any programmer's time to learn how to use it, and to learn the basics of Dockerfiles.  Dockerfile generator can ease the barrier of entry, and let people get up and running quickly, especially those who just want an image for particular distro with their choice of apps installed.
+Containerisation is incredibly powerful.  It is worth any programmer's time to learn how to use it, as is the basics of Dockerfiles.  dockerfile_generator can ease the barrier of entry, and let people get up and running quickly, especially those who just want an image for particular distro with their choice of apps installed.
 
-Dockerfile generator provides a set of nested Jinja 2 templates, that are configurable (e.g. by JSON files), that match a 
+Dockerfile_generator provides a set of nested Jinja 2 templates, that are configurable (e.g. by JSON files), that match a 
 required data structure, that describe the possible contents and purpose of the Dockerfile.  The config files are reusable, and can refer to Jinja 2 sub-templates, e.g. that describe the best practise use of a particular package manager
 The raison d'etre is to allow multiple Dockerfiles to be generated from the same configuration, for parametric testing.
 A configuration can determine which parameters to do something with on the command line (and which default command to use 
 with unrecognised parameters).  The order of the commands can be adjusted, e.g. to manage the use of Docker's Cache.
 Parameters are most likely to be the names of packages to be installed
 with a package manager, but could be any arbitrary string, or none (the empty string), and Commands need not be 'RUN' Commands.
-Special commands that necessitate multi-stage Dockerfiles only when their param is provided, are also supported by referring to a Jinja 2 sub-template or a build script (e.g. .sh), for packages to be built from source.  No effort is made to validate extra custom stages. So e.g. to guarantee compilation the user must tell Dockerfile generator exactly what to do, either in the sub-template or build script, and refer to it against a parameter in their configuration.
+Special commands that necessitate multi-stage Dockerfiles only when their param is provided, are also supported by referring to a Jinja 2 sub-template or a build script (e.g. .sh), for packages to be built from source.  No effort is made to validate extra custom stages. So e.g. to guarantee compilation the user must tell Dockerfile_generator exactly what to do, either in the sub-template or build script, and refer to it against a parameter in their configuration.
 The outputs from Dockerfile_generator with the included config files, are inteded to reflect the best practise in writing Dockerfiles
 and pass linting by Hadolint (with some rules relaxed, described below).  An image has been successfully built with Docker from each provided config file, for the Dockerfile generated from it when all supported parameters are provided.
 
