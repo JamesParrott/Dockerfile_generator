@@ -33,12 +33,10 @@ Containerisation is incredibly powerful.  It is worth any programmer's time to l
 
 Dockerfile_generator provides a set of nested Jinja 2 templates, that are configurable (e.g. by JSON files), that match a 
 required data structure, that describe the possible contents and purpose of the Dockerfile.  The config files are reusable, and can refer to Jinja 2 sub-templates, e.g. that describe the best practise use of a particular package manager
-The raison d'etre is to allow multiple Dockerfiles to be generated from the same configuration, for parametric testing.
+This allows multiple Dockerfiles to be generated from the same configuration, for parametric testing.
 A configuration can determine which parameters to do something with on the command line (and which default command to use 
-with unrecognised parameters).  The order of the commands can be adjusted, e.g. to manage the use of Docker's Cache.
-Parameters are most likely to be the names of packages to be installed
-with a package manager, but could be any arbitrary string, or none (the empty string), and Commands need not be 'RUN' Commands.
-Special commands that necessitate multi-stage Dockerfiles only when their param is provided, are also supported by referring to a Jinja 2 sub-template or a build script (e.g. .sh), for packages to be built from source.  No effort is made to validate extra custom stages. So e.g. to guarantee compilation the user must tell Dockerfile_generator exactly what to do, either in the sub-template or build script, and refer to it against a parameter in their configuration.
+with unrecognised parameters).  The order of the commands can be adjusted, e.g. to manage the use of Docker's build cache.
+Parameters are most likely to be the names of packages to be installed with a package manager, but could be any arbitrary string, or none (the empty string), and Commands need not be 'RUN' Commands. Special commands that necessitate multi-stage Dockerfiles only when their param is provided, are also supported by referring to a Jinja 2 sub-template or a build script (e.g. .sh), for packages to be built from source.  No effort is made to validate extra custom stages. So e.g. to guarantee compilation the user must tell Dockerfile_generator exactly what to do, either in the sub-template or build script, and refer to it against a parameter in their configuration.
 The outputs from Dockerfile_generator with the included config files, are inteded to reflect the best practise in writing Dockerfiles
 and pass linting by Hadolint (with some rules relaxed, described below).  An image has been successfully built with Docker from each provided config file, for the Dockerfile generated from it when all supported parameters are provided.
 
@@ -86,16 +84,13 @@ Dockerfiles for some official images are already generated using an [alternative
 }
 
 ## Development
-This Branch is for posterity, and as a warning to others...
+Following a couple of months break from it, and after having worked on Dockerfile_generator again, I now fully appreciate the wisdom of not implementing business logic in a templating language.  However this does bring some advantages.
 
-Following a couple of months break from it, and after having worked on this project again, I now fully appreciate the wisdom of not implementing business logic in a templating language.  However this does bring some advantages.
-
-Other than the tests, the working code in this branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written!
+Other than a small CLI wrapper and the tests, the working code in this branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written!
 
 By keeping this project pure Jinja 2, advanced users and devs alike (that are willing to learn the basics of Jinja 2), are able to access vastly more flexibility in how they use it, or part of it, by the native mechanisms of Jinja 2 alone.  Namely: imports, template inheritance, overrides, and includes, of any of the sub templates (.jinja files).   
 
-A small Python wrapper (that does what Jinja2-cli is used for, without a cli) would be more suitable for development of extra features (e.g. sending requests to package manager APIs) or defining the Dockerfile generation logic entirely.  This will be implemented on the
-main branch.
+In future the CLI wrapper could be developed to include more of the logic, for example to send requests to a package manager API to check the packages to be installed are correct. 
 
 ## Testing
 
