@@ -46,6 +46,9 @@ Dockerfiles for some official images are already generated using an [alternative
 
 
 ## Config files
+
+Toml is supported where tomllib is available (>= Python 3.11)
+
 ### 'JSON' Example.
 ```
 {"config" :  # Required boilerplate.  Makes the code tidier.
@@ -85,11 +88,10 @@ Dockerfiles for some official images are already generated using an [alternative
 }
 ```
 ## Development
-Following a couple of months break from it, and after having worked on Dockerfile_generator again, I now fully appreciate the wisdom of not implementing business logic in a templating language.  However this does bring some advantages.
 
-Other than a small CLI wrapper and the tests, the working code in this branch is pure Jinja2 Templates plus Json config files.  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written!
+Other than a small CLI wrapper and the tests, the code is pure Jinja2 Templates plus JSON config files.  It works well - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  Following a couple of months break from it, and after having worked on Dockerfile_generator again, I now fully appreciate the wisdom of not implementing business logic in a templating language.  The templates contain the hardest to maintain, and outright ugliest code I've ever written!  
 
-By keeping this project pure Jinja 2, advanced users and devs alike (that are willing to learn the basics of Jinja 2), are able to access vastly more flexibility in how they use it, or part of it, by the native mechanisms of Jinja 2 alone.  Namely: imports, template inheritance, overrides, and includes, of any of the sub templates (.jinja files).   
+However, the self-contained templates have one major advantage.  Advanced users and devs alike (that are willing to learn the basics of Jinja 2), are able to access vastly more flexibility in how they use any part of it, by the native mechanisms of Jinja 2 alone.  Namely: imports, template inheritance, overrides, and includes.   
 
 In future the CLI wrapper could be developed to include more of the logic, for example to send requests to a package manager API to check the packages to be installed are correct. 
 
