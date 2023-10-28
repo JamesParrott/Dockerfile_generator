@@ -1,8 +1,8 @@
 {% macro version_if_any_for_x_from(
             x,
-            command
+            supported_parameters
             ) -%}
-{% if command.supported_parameters is mapping() -%}
+{% if supported_parameters is mapping() -%}
 {% set val=container.get(x) -%}
 {% if val is string() -%}
 {{ x -}}{{ val -}}
