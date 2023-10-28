@@ -12,15 +12,15 @@
  "commands" : {
       "install_from_main_and_community" : {
        "file_path" : "/command_templates/apk.jinja",
-       "supported_parameters" : {"bash" : "bash=9.6.7",
-                                 "dash" : "dash=3.4.5",
-                                 "fish": "fish=2.3.4"
+       "supported_parameters" : {"bash" : "bash=5.2.15-r6",
+                                 "dash" : "dash=0.5.12-r2",
+                                 "fish": "fish=3.6.1-r3"
                                 }
          },
       "install_from_testing" : {
        "file_path" : "/command_templates/alpine-apk-testing.jinja",
-       "supported_parameters" : {"elvish" : "elvish=1.8.9",
-                                 "xonsh" : "xonsh=4.8.7"
+       "supported_parameters" : {"elvish" : "elvish=0.19.2-r3",
+                                 "xonsh" : "xonsh=0.14.1-r0"
                                 }
          }
                               },
