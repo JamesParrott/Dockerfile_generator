@@ -1,15 +1,23 @@
 # Dockerfile_generator
 
-## Installation
- - Install the latest Python version from [python.org] (version 3.7 or later is supported).
+## In Browser
+Pyodide may need a minute to load and is almost a [20 MB download](https://jamesparrott.github.io/Dockerfile_generator/) 
+
+`dockerfile_generator debian ash dash zsh heirloom fish elvish`
+
+Only the default configs are supported for now.
+
+## Installation with Python
 Either:
  - Install pipx, e.g. `pip install pipx`
  - `pipx install dockerfile_generator`
+
 Or
  - Make a venv and activate it.
  - `pip install dockerfile_generator` 
 
-## Example usage
+
+## Example command line use
 `dockerfile_generator debian ash dash zsh heirloom fish elvish > Dockerfile`
 
 ## Features
