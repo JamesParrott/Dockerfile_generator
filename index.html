@@ -26,7 +26,6 @@ body {
 
             let pyodide = await pyodideReadyPromise;    
             output = pyodide.runPython(
-                // `dockerfile_generator.main.main(["${args.join('", "')}"])`
                 `dockerfile_generator.main.rendered_Dockerfile(config="${config}", params=["${args.join('", "')}"])`
                 )
             this.echo(output)
