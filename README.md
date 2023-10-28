@@ -24,7 +24,7 @@ Or
  - Labels.
  - User config files can support arbitrary docker commands by referring to sub templates.  Parameters are not limited to params to be installed.
  - Config files are supplied for Alpine, Debian and Ubuntu images with apk and apt-get.  You no longer have to remember the
- apt-get "incantation.
+ apt-get "incantation".
    - Base image and Base tag args for maintainability.
    - Commands ordered from most common to least common, to make best use of Docker's build cache.
 
@@ -47,6 +47,7 @@ Dockerfiles for some official images are already generated using an [alternative
 
 ## Config files
 ### 'JSON' Example.
+```
 {"config" :  # Required boilerplate.  Makes the code tidier.
 {
 "base_image" : the name (and owner if any) of the base image, e.g. "alpine"
@@ -82,11 +83,11 @@ Dockerfiles for some official images are already generated using an [alternative
  "unused_parameters_command" : The name of the default command to pass an unrecognised param in the render args to, that doesn't, appear in any command in commands_order's "supported_parameters", e.g. "install_from_main_and_community"
 }
 }
-
+```
 ## Development
 Following a couple of months break from it, and after having worked on Dockerfile_generator again, I now fully appreciate the wisdom of not implementing business logic in a templating language.  However this does bring some advantages.
 
-Other than a small CLI wrapper and the tests, the working code in this branch is pure Jinja2 Templates plus Json config files (so theoretically no Python is needed, just a Jinja 2 renderer).  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written!
+Other than a small CLI wrapper and the tests, the working code in this branch is pure Jinja2 Templates plus Json config files.  It works by and large - it generates Dockerfiles that Hadolint only has minor differences of opinion with me about.  However it does contain the hardest to maintain, and outright ugliest code I've ever written!
 
 By keeping this project pure Jinja 2, advanced users and devs alike (that are willing to learn the basics of Jinja 2), are able to access vastly more flexibility in how they use it, or part of it, by the native mechanisms of Jinja 2 alone.  Namely: imports, template inheritance, overrides, and includes, of any of the sub templates (.jinja files).   
 
@@ -99,7 +100,7 @@ In future the CLI wrapper could be developed to include more of the logic, for e
 
 ### Dockerfile build tests
 - start the docker daemon, e.g. by opening Docker Desktop.
-`tox -e docker_build-py311` to build test dockerfiles (can ~20 minutes or longer)
+`tox -e docker_build-py311` to build test dockerfiles (can take ~20 minutes or longer)
 
 ### Relaxation of Hadolint's version pinning rules.
 
