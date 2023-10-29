@@ -54,6 +54,8 @@ class Config(typing.TypedDict):
 
 FROM "${base_image}:${base_tag}" as runner
 
+ENV LANG=C.UTF8
+
 {% block labels -%}
 {% import 'macros/labels.jinja' as labels with context -%}
 {{ labels.render_labels(
