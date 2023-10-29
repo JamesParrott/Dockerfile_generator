@@ -5,7 +5,7 @@ Pyodide may need a minute to load and is almost a [20 MB download](https://james
 
 `dockerfile_generator debian ash dash zsh heirloom fish elvish`
 
-Only the default configs are supported for now.
+Only the default configs are supported in browser (for now).
 
 ## Installation with Python
 Either:

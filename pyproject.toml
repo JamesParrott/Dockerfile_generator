@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dockerfile_generator"
-version = "1.0.5"
+version = "1.0.6"
 license = {file = "LICENSE"}
 authors = [
   { name="James Parrott", email="james.parrott@proton.me" },
