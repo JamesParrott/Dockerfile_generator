@@ -50,6 +50,8 @@ def rendered_Dockerfile(
     # provided as a space separated string 
     ws_separated_params = ' '.join(params)
 
+    template = pathlib.Path(template)
+
     if config in BUILT_IN_CONFIGS:
         path = CONFIGS_DIR / BUILT_IN_CONFIGS[config]
     else:
@@ -67,7 +69,9 @@ def rendered_Dockerfile(
             elif not path.is_file():
                 error_msg = f'{config=} is not file (is it a directory?). ' 
                 
-            error_msg = f'{error_msg} config must be a file or in {", ".join(BUILT_IN_CONFIGS)} '
+            error_msg = (f'{error_msg} config must be a file '
+                         f'or in {", ".join(BUILT_IN_CONFIGS)} '
+                        )
             raise FileNotFoundError(error_msg)
 
     ext = path.suffix
@@ -84,7 +88,7 @@ def rendered_Dockerfile(
 
     env = jinja2.Environment(
         loader = jinja2.FileSystemLoader(template.parent),
-        extensions = ['jinja2.ext.do',  # For statements that don't return a value with set.
+        extensions = ['jinja2.ext.do',  # So statements need not return values.
                       'jinja2.ext.loopcontrols'], # For continue and break
         )
 
@@ -113,10 +117,10 @@ def main(args = sys.argv[1:]):
         )    
 
     parser.add_argument(
-        'template',
+        '--template',
         help = ('The Dockerfile template chosen, corresponding to the  '
                 'configuration in config.  '
-                f'Default: {DEFAULT_TEMPLATE)} '
+                f'Default: {DEFAULT_TEMPLATE} '
                ),
         type=str,
         default = DEFAULT_TEMPLATE
