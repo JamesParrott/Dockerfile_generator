@@ -58,7 +58,7 @@ def rendered_Dockerfile(
         
         error_msg = ''
 
-        for ext in itertools.chain([''], CONFIG_IMPORTERS.keys()):
+        for ext in itertools.chain(CONFIG_IMPORTERS.keys(), ['']):
             path = pathlib.Path(config + ext)
             if path.exists() and path.is_file():
                 break
