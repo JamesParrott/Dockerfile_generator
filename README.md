@@ -114,7 +114,7 @@ In future the CLI wrapper could be developed to include more of the logic, for e
 
 ### Relaxation of Hadolint's version pinning rules.
 
-Dockerfile_generator was written to allow parametric testing, and to programmatically vary properties of test environments defined by Dockerfiles.  Other applications of Dockerfiles prioritise reproducible builds, and recommend pinning versions of apps installed in Containers (and base Dockerfile image versions). 
+Dockerfile_generator was written to allow parametric testing, and to programmatically vary properties of test environments, defined by Dockerfiles.  Other applications of Dockerfiles prioritise reproducible builds, and recommend pinning versions of apps installed in Containers (and base Dockerfile image versions). 
 
 Parametric integration or acceptance testing enables a project to determine which third party params (e.g. shells) it is possible to support.  In this context, one of the goals of testing is precisely to discover if an unpinned external dependency breaks the project.  Users will experience exactly the same breakage.  
 
