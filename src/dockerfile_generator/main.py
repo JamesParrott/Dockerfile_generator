@@ -3,12 +3,15 @@ import argparse
 import pathlib
 import types
 from typing import Iterable
+import itertools
 
 import jinja2
 
 
 CONFIGS_DIR = pathlib.Path(__file__).parent / 'configs'
-TEMPLATE = pathlib.Path(__file__).parent / 'templates' / 'Dockerfile.jinja'
+TEMPLATES_DIR = pathlib.Path(__file__).parent / 'templates'
+DEFAULT_TEMPLATE = TEMPLATES_DIR / 'Dockerfile.jinja'
+
 
 # Make a read only 'dictionary'
 BUILT_IN_CONFIGS = types.MappingProxyType(
@@ -28,7 +31,7 @@ def _get_toml_importer():
     import tomllib
     return tomllib.load
 
-
+# Dots need to be included.
 CONFIG_IMPORTERS = types.MappingProxyType(
                       {'.json' : _get_json_importer,
                        '.toml' : _get_toml_importer,
@@ -40,7 +43,7 @@ def rendered_Dockerfile(
     config: str,
     params: Iterable[str],
     encoding: str = 'utf8',
-    template: str | pathlib.Path = TEMPLATE,
+    template: str | pathlib.Path = DEFAULT_TEMPLATE,
     ):
     
     # For compatibility with jinja2-cli's -d option, the Params are 
@@ -50,17 +53,20 @@ def rendered_Dockerfile(
     if config in BUILT_IN_CONFIGS:
         path = CONFIGS_DIR / BUILT_IN_CONFIGS[config]
     else:
-        path = pathlib.Path(config)
-
+        
         error_msg = ''
 
-        if not path.exists():
-            error_msg = f'No file found: {config=}. '
+        for ext in itertools.chain([''], CONFIG_IMPORTERS.keys()):
+            path = pathlib.Path(config + ext)
+            if path.exists() and path.is_file():
+                break
+        else:
 
-        if not path.is_file():
-            error_msg = f'{config=} is a directory. ' 
-        
-        if error_msg:
+            if not path.exists():
+                error_msg = f'No file found: {config=}. '
+            elif not path.is_file():
+                error_msg = f'{config=} is not file (is it a directory?). ' 
+                
             error_msg = f'{error_msg} config must be a file or in {", ".join(BUILT_IN_CONFIGS)} '
             raise FileNotFoundError(error_msg)
 
@@ -77,13 +83,14 @@ def rendered_Dockerfile(
         config_dict = importer(f)['config']
 
     env = jinja2.Environment(
-        loader = jinja2.FileSystemLoader(TEMPLATE.parent),
-        extensions = ['jinja2.ext.do', 'jinja2.ext.loopcontrols'],
+        loader = jinja2.FileSystemLoader(template.parent),
+        extensions = ['jinja2.ext.do',  # For statements that don't return a value with set.
+                      'jinja2.ext.loopcontrols'], # For continue and break
         )
 
-    template = env.get_template(TEMPLATE.name)
+    template_obj = env.get_template(template.name)
 
-    return template.render(config = config_dict, params = ws_separated_params)
+    return template_obj.render(config = config_dict, params = ws_separated_params)
 
 
 def main(args = sys.argv[1:]):
@@ -103,6 +110,16 @@ def main(args = sys.argv[1:]):
                ),
         type=str,
         default = 'alpine'
+        )    
+
+    parser.add_argument(
+        'template',
+        help = ('The Dockerfile template chosen, corresponding to the  '
+                'configuration in config.  '
+                f'Default: {DEFAULT_TEMPLATE)} '
+               ),
+        type=str,
+        default = DEFAULT_TEMPLATE
         )
     
     parser.add_argument(
