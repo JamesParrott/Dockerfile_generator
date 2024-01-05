@@ -10,6 +10,15 @@ from ..test_cli import (_generate_Dockerfile,
                         )
 
 
+DOCKER_AVAILABLE = subprocess.run(
+                        'docker ps',
+                        shell = True,
+                        stderr = subprocess.STDOUT,
+                        stdout = subprocess.PIPE,
+                        ).returncode==0
+
+
+
 
 
 
@@ -36,7 +45,7 @@ def _build_image_from(
 
 
 
-
+@pytest.mark.skipif(not DOCKER_AVAILABLE, reason = 'Docker is not available (or Docker daemon not running). ')
 @pytest.mark.parametrize('config_path, params, __', _only_all_param_tests()) #[('configs/debian', 'ash dash zsh heirloom fish elvish')])
 def test_generating_and_building_Dockerfiles(config_path, params, __):
 
