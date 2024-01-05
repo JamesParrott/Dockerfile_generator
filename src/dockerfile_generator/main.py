@@ -2,7 +2,7 @@ import sys
 import argparse
 import pathlib
 import types
-from typing import Iterable
+from typing import Iterable, Callable
 import itertools
 
 import jinja2
@@ -31,7 +31,8 @@ def _get_toml_importer():
     import tomllib
     return tomllib.load
 
-# Dots need to be included.
+# Lazy imports.  
+# Dots need to be included in key for simple ext searcher below.
 CONFIG_IMPORTERS = types.MappingProxyType(
                       {'.json' : _get_json_importer,
                        '.toml' : _get_toml_importer,
@@ -39,34 +40,25 @@ CONFIG_IMPORTERS = types.MappingProxyType(
                      )
 
 
-def rendered_Dockerfile(
+def _config_dict(
     config: str,
-    params: Iterable[str],
     encoding: str = 'utf8',
-    template: str | pathlib.Path = DEFAULT_TEMPLATE,
-    ):
-    
-    # For compatibility with jinja2-cli's -d option, the Params are 
-    # provided as a space separated string 
-    ws_separated_params = ' '.join(params)
-
-    template = pathlib.Path(template)
-
+    )-> dict:
     if config in BUILT_IN_CONFIGS:
-        path = CONFIGS_DIR / BUILT_IN_CONFIGS[config]
+        config_path = CONFIGS_DIR / BUILT_IN_CONFIGS[config]
     else:
         
         error_msg = ''
 
         for ext in itertools.chain(CONFIG_IMPORTERS.keys(), ['']):
-            path = pathlib.Path(config + ext)
-            if path.exists() and path.is_file():
+            config_path = pathlib.Path(config + ext)
+            if config_path.exists() and config_path.is_file():
                 break
         else:
 
-            if not path.exists():
+            if not config_path.exists():
                 error_msg = f'No file found: {config=}. '
-            elif not path.is_file():
+            elif not config_path.is_file():
                 error_msg = f'{config=} is not file (is it a directory?). ' 
                 
             error_msg = (f'{error_msg} config must be a file '
@@ -74,7 +66,7 @@ def rendered_Dockerfile(
                         )
             raise FileNotFoundError(error_msg)
 
-    ext = path.suffix
+    ext = config_path.suffix
     if ext.lower() not in CONFIG_IMPORTERS:
         raise NotImplementedError(
             f'Unsupported file extension: {ext} for {config=}. '
@@ -83,18 +75,79 @@ def rendered_Dockerfile(
 
     importer = CONFIG_IMPORTERS[ext]()
 
-    with path.open('rt', encoding=encoding) as f:
-        config_dict = importer(f)['config']
+    with config_path.open('rt', encoding=encoding) as f:
+        return importer(f)['config']
 
-    env = jinja2.Environment(
-        loader = jinja2.FileSystemLoader(template.parent),
-        extensions = ['jinja2.ext.do',  # So statements need not return values.
-                      'jinja2.ext.loopcontrols'], # For continue and break
-        )
 
-    template_obj = env.get_template(template.name)
+def _get_loader(
+    template: str | pathlib.Path = DEFAULT_TEMPLATE,
+    ) -> jinja2.Loader | None:
+    
+    path = pathlib.Path(template)
+
+    if path.is_file():
+        return jinja2.FileSystemLoader(path.parent)
+
+    return None
+
+
+def _get_template(
+    environment: jinja2.Environment = None,
+    # template could be a file path, str of a template, or any arg accepted by get_template
+    template: str | pathlib.Path = DEFAULT_TEMPLATE,  
+    loader: jinja2.Loader = None,
+    **kwargs
+    ):
+
+    # _get_loader returns None if template is not 
+    # a path to an existing file 
+    loader = loader or _get_loader(template)
+
+
+    environment = environment or jinja2.Environment(
+                                            loader = loader,
+                                            extensions = extensions,
+                                            **kwargs
+                                            )
+
+    if loader is None:
+        # template not a path to an existing file
+        return environment.from_string(str(template))
+
+    return environment.get_template(str(template))
+
+
+def render(
+    template_obj: jinja2.Template = None,
+    config: str,
+    params: Iterable[str],
+    environment: jinja2.Environment = None,
+    extensions = ['jinja2.ext.do',  # So statements need not return values.
+                  'jinja2.ext.loopcontrols'], # For continue and break
+    template: str = '', | pathlib.Path = DEFAULT_TEMPLATE,
+    loader: jinja2.BaseLoader = None,
+    encoding: str = 'utf8',
+    **kwargs
+    ) -> str:
+
+    config_dict = _config_dict(config, encoding)
+
+    # For compatibility with jinja2-cli's -d option, the Params are 
+    # provided as a space separated string 
+    ws_separated_params = ' '.join(params)
+
+
+    template_obj = template_obj or _get_template(
+                                            environment = environment,
+                                            loader = loader
+                                            template = template,
+                                            **kwargs,
+                                            )
 
     return template_obj.render(config = config_dict, params = ws_separated_params)
+
+# for backward compatibility
+rendered_Dockerfile = render
 
 
 def main(args = sys.argv[1:]):
@@ -138,7 +191,7 @@ def main(args = sys.argv[1:]):
 
     namespace = parser.parse_args(args)
 
-    print(rendered_Dockerfile(**vars(namespace)))
+    print(render(**vars(namespace)))
 
     return 0
 
