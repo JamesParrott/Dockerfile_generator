@@ -81,7 +81,7 @@ def _config_dict(
 
 def _get_loader(
     template: str | pathlib.Path = DEFAULT_TEMPLATE,
-    ) -> jinja2.Loader | None:
+    ) -> jinja2.BaseLoader | None:
     
     path = pathlib.Path(template)
 
@@ -95,7 +95,7 @@ def _get_template(
     environment: jinja2.Environment = None,
     # template could be a file path, str of a template, or any arg accepted by get_template
     template: str | pathlib.Path = DEFAULT_TEMPLATE,  
-    loader: jinja2.Loader = None,
+    loader: jinja2.BaseLoader = None,
     **kwargs
     ):
 
