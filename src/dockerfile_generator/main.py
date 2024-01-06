@@ -80,13 +80,11 @@ def _config_dict(
 
 
 def _get_loader(
-    template: str | pathlib.Path = DEFAULT_TEMPLATE,
+    path: pathlib.Path = DEFAULT_TEMPLATE,
     ) -> jinja2.BaseLoader | None:
     
-    path = pathlib.Path(template)
 
-    if path.is_file():
-        return jinja2.FileSystemLoader(path.parent)
+
 
     return None
 
@@ -100,10 +98,16 @@ def _get_template(
                              'jinja2.ext.loopcontrols'], # For continue and break    **kwargs
     ):
 
-    # _get_loader returns None if template is not 
-    # a path to an existing file 
-    loader = loader or _get_loader(template)
 
+    path = pathlib.Path(template)
+
+    if loader is None:
+        if path.is_file():
+            loader = jinja2.FileSystemLoader(path.parent)
+
+            # Callers providing their own FileSystemLoader
+            # must split out the name from the parent dir themselves
+            template = path.name
 
     environment = environment or jinja2.Environment(
                                             loader = loader,
