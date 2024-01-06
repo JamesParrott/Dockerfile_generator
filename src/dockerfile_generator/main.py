@@ -114,7 +114,7 @@ def _get_template(
         # template not a path to an existing file
         return environment.from_string(str(template))
 
-    return environment.get_template(str(template))
+    return environment.get_template(template)
 
 
 def render(
