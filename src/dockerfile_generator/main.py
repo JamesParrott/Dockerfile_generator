@@ -94,9 +94,10 @@ def _get_loader(
 def _get_template(
     environment: jinja2.Environment = None,
     # template could be a file path, str of a template, or any arg accepted by get_template
-    template: str | pathlib.Path = DEFAULT_TEMPLATE,  
     loader: jinja2.BaseLoader = None,
-    **kwargs
+    template: str | pathlib.Path = DEFAULT_TEMPLATE,  
+    extensions: list[str] = ['jinja2.ext.do',  # So statements need not return values.
+                             'jinja2.ext.loopcontrols'], # For continue and break    **kwargs
     ):
 
     # _get_loader returns None if template is not 
@@ -140,6 +141,7 @@ def render(
                                             environment = environment,
                                             loader = loader,
                                             template = template,
+                                            extensions = extensions,
                                             )
 
     return template_obj.render(
