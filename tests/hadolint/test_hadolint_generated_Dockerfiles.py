@@ -5,6 +5,8 @@ import re
 
 import pytest
 
+import pathlib
+
 from ..test_case_parameters import (_generate_test_data,
                                     VERSION_PINNING_RULES,
                                     RULES_TO_ALWAYS_IGNORE
@@ -60,7 +62,12 @@ def test_config(config, params, rules_to_ignore):
 
     df_gen_output, df_gen_result, dockerfile_path = _generate_Dockerfile(config, params)
 
+    path = pathlib.Path(dockerfile_path)
+    assert path.is_file()
+    assert len(path.read_text()) >= 1
+
     hadolint_output, result, ___ = _run_hadolint(dockerfile_path, rules_to_ignore)
 
+    assert df_gen_result.returncode == 0
     assert result.returncode == 0
     assert 'warning' not in hadolint_output.lower()
