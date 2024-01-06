@@ -107,7 +107,6 @@ def _get_template(
     environment = environment or jinja2.Environment(
                                             loader = loader,
                                             extensions = extensions,
-                                            **kwargs
                                             )
 
     if loader is None:
@@ -118,15 +117,15 @@ def _get_template(
 
 
 def render(
-    template_obj: jinja2.Template = None,
     config: str,
     params: Iterable[str],
+    encoding: str = 'utf8',
+    template: str | pathlib.Path = DEFAULT_TEMPLATE,
+    template_obj: jinja2.Template = None,
     environment: jinja2.Environment = None,
     extensions = ['jinja2.ext.do',  # So statements need not return values.
                   'jinja2.ext.loopcontrols'], # For continue and break
-    template: str = '', | pathlib.Path = DEFAULT_TEMPLATE,
     loader: jinja2.BaseLoader = None,
-    encoding: str = 'utf8',
     **kwargs
     ) -> str:
 
@@ -139,12 +138,15 @@ def render(
 
     template_obj = template_obj or _get_template(
                                             environment = environment,
-                                            loader = loader
+                                            loader = loader,
                                             template = template,
-                                            **kwargs,
                                             )
 
-    return template_obj.render(config = config_dict, params = ws_separated_params)
+    return template_obj.render(
+                config = config_dict,
+                params = ws_separated_params,
+                **kwargs
+                )
 
 # for backward compatibility
 rendered_Dockerfile = render
