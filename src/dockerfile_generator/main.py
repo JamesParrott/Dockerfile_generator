@@ -115,7 +115,7 @@ def _get_template(
                                             )
 
     if loader is None:
-        # template not a path to an existing file
+        # assert not path.is_file() 
         return environment.from_string(str(template))
 
     return environment.get_template(template)
